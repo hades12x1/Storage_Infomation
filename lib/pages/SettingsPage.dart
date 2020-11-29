@@ -101,6 +101,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   });
                 },
                 circleSize: 60,
+                shrinkWrap: true,
                 selectedColor: selectedColor,
               ),
             ],

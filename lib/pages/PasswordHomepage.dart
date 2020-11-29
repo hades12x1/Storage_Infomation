@@ -105,9 +105,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                           onPressed: () {
                             Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        SettingsPage()));
+                                MaterialPageRoute(builder: (BuildContext context) => SettingsPage()));
                           },
                         ),
                       ],
