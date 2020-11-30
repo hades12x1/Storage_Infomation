@@ -6,6 +6,7 @@ import 'package:storage_infomation/model/PasswordModel.dart';
 import 'package:storage_infomation/pages/ViewPasswordPage.dart';
 
 import 'AddPasswordPage.dart';
+import 'MainDrawer.dart';
 import 'SettingsPage.dart';
 
 class PasswordHomepage extends StatefulWidget {
@@ -18,6 +19,7 @@ class PasswordHomepage extends StatefulWidget {
 }
 
 class _PasswordHomepageState extends State<PasswordHomepage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int pickedIcon;
 
   List<Icon> icons = [
@@ -60,6 +62,8 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
     Color primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: new MainDrawer(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -75,11 +79,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                         Icons.menu_outlined,
                         color: primaryColor,
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (BuildContext context) => SettingsPage()));
-                      },
+                      onPressed: () => _scaffoldKey.currentState.openDrawer()
                     ),
                     Text(
                       "Cipherly",
