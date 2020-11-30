@@ -72,8 +72,7 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
                   "Set Master Passwords for your all passwords. Keep your Master Password safe with you. This password will be used to unlock your encrypted passwords.",
                   style: TextStyle(
                       fontSize: 16,
-                      // color: Colors.black54,
-                      fontStyle: FontStyle.italic,
+                      fontStyle: FontStyle.normal,
                       fontFamily: "Subtitle"))),
           Expanded(
             child: Padding(

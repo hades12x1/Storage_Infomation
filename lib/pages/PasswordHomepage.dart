@@ -59,15 +59,6 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
     var size = MediaQuery.of(context).size;
     Color primaryColor = Theme.of(context).primaryColor;
 
-    // print(iconNames.indexOf('Icon 10'));
-
-    void changeBrightness() {
-      DynamicTheme.of(context).setBrightness(
-          Theme.of(context).brightness == Brightness.dark
-              ? Brightness.light
-              : Brightness.dark);
-    }
-
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,24 +70,23 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
+                    IconButton(
+                      icon: Icon(
+                        Icons.menu_outlined,
+                        color: primaryColor,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (BuildContext context) => SettingsPage()));
+                      },
+                    ),
                     Text(
                       "Cipherly",
-                      style: TextStyle(
-                          fontFamily: "Title",
-                          fontSize: 32,
-                          color: primaryColor),
+                      style: TextStyle(fontFamily: "Title", fontSize: 32, color: primaryColor),
                     ),
                     Row(
                       children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.wb_sunny,
-                            color: primaryColor,
-                          ),
-                          onPressed: () {
-                            changeBrightness();
-                          },
-                        ),
                         IconButton(
                           icon: Icon(
                             Icons.settings,
@@ -111,7 +101,31 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                       ],
                     ),
                   ],
-                )),
+                ),
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(20))
+            ),
+            padding: EdgeInsets.all(10.0),
+            child: Container(
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  color: Color.fromRGBO(244, 243, 243, 1),
+                  borderRadius: BorderRadius.circular(15)
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    prefixIcon: Icon(Icons.search, color: Colors.black87,),
+                    hintText: "Search you're looking for",
+                    hintStyle: TextStyle(color: Colors.grey, fontSize: 15)
+                ),
+              ),
+            ),
           ),
           Expanded(
             child: StreamBuilder<List<Password>>(
@@ -204,15 +218,20 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: primaryColor,
-        child: Icon(Icons.add),
-        onPressed: () async {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => AddPassword()));
-        },
+      floatingActionButton: Container(
+        padding: EdgeInsets.only(bottom: 50.0, left: 300),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: FloatingActionButton(
+            backgroundColor: primaryColor,
+            child: Icon(Icons.add),
+            onPressed: () async {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (BuildContext context) => AddPassword()));
+            },
+          ),
+        ),
       ),
     );
   }

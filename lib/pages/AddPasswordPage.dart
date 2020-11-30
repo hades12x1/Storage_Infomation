@@ -22,6 +22,7 @@ class _AddPasswordState extends State<AddPassword> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController passwordController = TextEditingController();
+  TextEditingController urlController = TextEditingController();
   TextEditingController appNameController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
 
@@ -39,13 +40,13 @@ class _AddPasswordState extends State<AddPassword> {
     Icon(Icons.account_circle, size: 28, color: Colors.white),
     Icon(Icons.add, size: 28, color: Colors.white),
     Icon(Icons.access_alarms, size: 28, color: Colors.white),
-    Icon(Icons.ac_unit, size: 28, color: Colors.white),
-    Icon(Icons.accessible, size: 28, color: Colors.white),
     Icon(Icons.account_balance, size: 28, color: Colors.white),
-    Icon(Icons.add_circle_outline, size: 28, color: Colors.white),
-    Icon(Icons.airline_seat_individual_suite, size: 28, color: Colors.white),
-    Icon(Icons.arrow_drop_down_circle, size: 28, color: Colors.white),
-    Icon(Icons.assessment, size: 28, color: Colors.white),
+    Icon(Icons.ac_unit, size: 28, color: Colors.white),
+    // Icon(Icons.accessible, size: 28, color: Colors.white),
+    // Icon(Icons.add_circle_outline, size: 28, color: Colors.white),
+    // Icon(Icons.airline_seat_individual_suite, size: 28, color: Colors.white),
+    // Icon(Icons.arrow_drop_down_circle, size: 28, color: Colors.white),
+    // Icon(Icons.assessment, size: 28, color: Colors.white),
   ];
 
   List<String> iconNames = [
@@ -139,7 +140,7 @@ class _AddPasswordState extends State<AddPassword> {
 
   @override
   void initState() {
-    pickedColor = Colors.red;
+    pickedColor = Colors.orange;
     getMasterPass();
     pickedIcon = 0;
     // authenticate();
@@ -211,6 +212,17 @@ class _AddPasswordState extends State<AddPassword> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: TextFormField(
+                      decoration: InputDecoration(
+                          labelText: "URL",
+                          labelStyle: TextStyle(fontFamily: "Subtitle"),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16))),
+                      controller: urlController,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: TextFormField(
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter valid Username';
@@ -237,7 +249,6 @@ class _AddPasswordState extends State<AddPassword> {
                       },
                       obscureText: obscureText,
                       decoration: InputDecoration(
-                        // errorText: 'Please enter valid password',
                         labelText: "Password",
                         labelStyle: TextStyle(fontFamily: "Subtitle"),
                         border: OutlineInputBorder(
@@ -290,16 +301,12 @@ class _AddPasswordState extends State<AddPassword> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
                         height: 10,
-                        width: passwordStrength == 0
-                            ? 5
-                            : MediaQuery.of(context).size.width *
-                                passwordStrength,
+                        width: passwordStrength == 0 ? 5 : MediaQuery.of(context).size.width * passwordStrength,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: passwordStrengthBarColor,
@@ -308,14 +315,12 @@ class _AddPasswordState extends State<AddPassword> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Padding(
-                          padding: const EdgeInsets.only(
-                              left: 8.0, right: 8.0, top: 8.0),
+                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                           child: Text(
                             "Pick an Icon",
                             style: TextStyle(
@@ -325,8 +330,7 @@ class _AddPasswordState extends State<AddPassword> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(
-                              left: 8.0, right: 8.0, top: 8.0),
+                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                           child: Material(
                             shape: CircleBorder(),
                             elevation: 4.0,
@@ -356,7 +360,7 @@ class _AddPasswordState extends State<AddPassword> {
                               });
                             },
                             child: Material(
-                                elevation: 4.0,
+                                elevation: 2.0,
                                 color: pickedColor,
                                 shape: CircleBorder(),
                                 child: icons[index]),
@@ -372,10 +376,7 @@ class _AddPasswordState extends State<AddPassword> {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             "Pick a Color",
-                            style: TextStyle(
-                                fontFamily: 'Title',
-                                fontSize: 20,
-                                color: primaryColor),
+                            style: TextStyle(fontFamily: 'Title', fontSize: 20, color: primaryColor),
                           ),
                         ),
                         InkWell(
@@ -383,11 +384,10 @@ class _AddPasswordState extends State<AddPassword> {
                             _openColorPicker();
                           },
                           child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 8.0, right: 8.0, top: 8.0),
+                            padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
                             child: Material(
                                 shape: CircleBorder(),
-                                elevation: 4.0,
+                                elevation: 2.0,
                                 child: CircleAvatar(
                                   backgroundColor: pickedColor,
                                   radius: 25,
