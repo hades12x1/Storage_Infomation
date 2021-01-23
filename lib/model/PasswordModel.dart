@@ -15,10 +15,12 @@ class Password {
   String userName;
   String appName;
   String password;
+  String url;
+  String note;
   String icon;
   String color;
 
-  Password({this.id, this.icon,this.color, this.userName, this.appName, this.password});
+  Password({this.id, this.icon,this.color, this.userName, this.appName, this.password, this.url, this.note});
 
   Password.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -26,6 +28,8 @@ class Password {
     password = json['password'];
     userName = json['user_name'];
     icon = json['icon'];
+    url = json['url'] ?? '';
+    note = json['note'] ?? '';
     color = json['color'];
   }
 
@@ -35,6 +39,8 @@ class Password {
     data['app_name'] = this.appName;
     data['password'] = this.password;
     data['user_name'] = this.userName;
+    data['url'] = this.url ?? '';
+    data['note'] = this.note ?? '';
     data['icon'] = this.icon;
     data['color'] = this.color;
     return data;

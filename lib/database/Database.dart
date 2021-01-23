@@ -30,6 +30,8 @@ class DBProvider {
           "app_name TEXT,"
           "icon TEXT,"
           "color TEXT,"
+          "url TEXT,"
+          "note TEXT,"
           "password TEXT,"
           "user_name TEXT"
           ")");

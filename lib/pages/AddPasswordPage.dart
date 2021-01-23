@@ -24,6 +24,7 @@ class _AddPasswordState extends State<AddPassword> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController urlController = TextEditingController();
   TextEditingController appNameController = TextEditingController();
+  TextEditingController noteController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
 
   Color pickedColor;
@@ -223,6 +224,17 @@ class _AddPasswordState extends State<AddPassword> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: TextFormField(
+                      decoration: InputDecoration(
+                          labelText: "Note",
+                          labelStyle: TextStyle(fontFamily: "Subtitle"),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16))),
+                      controller: noteController,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: TextFormField(
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Please enter valid Username';
@@ -380,7 +392,7 @@ class _AddPasswordState extends State<AddPassword> {
         ),
       ),
       floatingActionButton: Container(
-        padding: EdgeInsets.only(bottom: 50.0, left: 300),
+        padding: EdgeInsets.only(bottom: 43.0, left: 300),
         child: Align(
           alignment: Alignment.bottomCenter,
           child: FloatingActionButton.extended(
@@ -395,7 +407,10 @@ class _AddPasswordState extends State<AddPassword> {
                     password: encryptedString,
                     color: "#" + pickedColor.value.toRadixString(16),
                     icon: iconNames[pickedIcon],
-                    userName: userNameController.text);
+                    userName: userNameController.text,
+                    url: urlController.text,
+                    note: noteController.text
+                );
                 DBProvider.db.newPassword(password);
                 Navigator.pushAndRemoveUntil(
                     context,

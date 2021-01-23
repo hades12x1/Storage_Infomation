@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:storage_infomation/model/PasswordModel.dart';
 
 class ViewPassword extends StatefulWidget {
@@ -59,13 +58,6 @@ class _ViewPasswordState extends State<ViewPassword> {
 
   bool didAuthenticate = false;
 
-  authenticate() async {
-    var localAuth = LocalAuthentication();
-    didAuthenticate = await localAuth.authenticateWithBiometrics(
-        localizedReason: 'Please authenticate to view password',
-        stickyAuth: true);
-  }
-
   Future<String> getMasterPass() async {
     final storage = new FlutterSecureStorage();
     String masterPass = await storage.read(key: 'master') ?? '';
@@ -77,14 +69,12 @@ class _ViewPasswordState extends State<ViewPassword> {
     print(password.color);
     color = hexToColor(password.color);
     index = iconNames.indexOf(password.icon);
-    authenticate();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    Color primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
       key: scaffoldKey,
@@ -95,7 +85,7 @@ class _ViewPasswordState extends State<ViewPassword> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-              height: size.height * 0.3,
+              height: size.height * 0.236,
               width: double.infinity,
               decoration: BoxDecoration(
                   color: color,
@@ -192,7 +182,6 @@ class _ViewPasswordState extends State<ViewPassword> {
                               style: TextStyle(
                                 fontFamily: 'Subtitle',
                                 fontSize: 20,
-                                // color: Colors.black54
                               ),
                             ),
                           ),
@@ -229,10 +218,98 @@ class _ViewPasswordState extends State<ViewPassword> {
                           scaffoldKey.currentState.showSnackBar(
                             SnackBar(
                               content: Text("Please unlock account to coppy!"),
-                              duration: Duration(seconds: 2),
+                              duration: Duration(seconds: 1),
                             ),
                           );
                         }
+                      },
+                    )
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Url",
+                            style: TextStyle(fontFamily: 'Title', fontSize: 20),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 270,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              password.url,
+                              style: TextStyle(
+                                fontFamily: 'Subtitle',
+                                fontSize: 20,
+                                // color: Colors.black54
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.copy),
+                      onPressed: () async {
+                        Clipboard.setData(new ClipboardData(text: password.url));
+                        scaffoldKey.currentState.showSnackBar(
+                          SnackBar(
+                            content: Text("Copied Url to Clipboard!"),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                    )
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Note",
+                            style: TextStyle(fontFamily: 'Title', fontSize: 20),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 270,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              password.url,
+                              style: TextStyle(
+                                fontFamily: 'Subtitle',
+                                fontSize: 20,
+                                // color: Colors.black54
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.copy),
+                      onPressed: () async {
+                        Clipboard.setData(new ClipboardData(text: password.note));
+                        scaffoldKey.currentState.showSnackBar(
+                          SnackBar(
+                            content: Text("Copied Note to Clipboard!"),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
                       },
                     )
                   ],
