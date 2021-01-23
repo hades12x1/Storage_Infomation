@@ -358,8 +358,6 @@ class _ViewPasswordState extends State<ViewPassword> {
             FlatButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                print(password.password);
-                print(masterPassController.text.trim());
                 decryptPass(password.password, masterPassController.text.trim());
                 masterPassController.clear();
                 if (!decrypt) {
