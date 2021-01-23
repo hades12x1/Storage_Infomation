@@ -344,30 +344,6 @@ class _AddPasswordState extends State<AddPassword> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(20.0, 0, 24, 10),
-                    child: GridView.count(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        crossAxisCount: 5,
-                        crossAxisSpacing: 2,
-                        mainAxisSpacing: 15,
-                        childAspectRatio: 1.3,
-                        children: List.generate(icons.length, (index) {
-                          return InkWell(
-                            onTap: () {
-                              setState(() {
-                                pickedIcon = index;
-                              });
-                            },
-                            child: Material(
-                                elevation: 2.0,
-                                color: pickedColor,
-                                shape: CircleBorder(),
-                                child: icons[index]),
-                          );
-                        })),
-                  ),
-                  Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -403,29 +379,35 @@ class _AddPasswordState extends State<AddPassword> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: primaryColor,
-        label: Text('Save'),
-        icon: Icon(Icons.add),
-        onPressed: () {
-          if (_formKey.currentState.validate()) {
-            encryptPass(passwordController.text);
-            Password password = new Password(
-                appName: appNameController.text,
-                password: encryptedString,
-                color: "#" + pickedColor.value.toRadixString(16),
-                icon: iconNames[pickedIcon],
-                userName: userNameController.text);
-            DBProvider.db.newPassword(password);
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => PasswordHomepage()),
-                (Route<dynamic> route) => false);
-          } else {
-            // print(Theme.of(context).accentColor);
-          }
-        },
+      floatingActionButton: Container(
+        padding: EdgeInsets.only(bottom: 50.0, left: 300),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: FloatingActionButton.extended(
+            backgroundColor: primaryColor,
+            label: Text('Save'),
+            icon: Icon(Icons.add),
+            onPressed: () {
+              if (_formKey.currentState.validate()) {
+                encryptPass(passwordController.text);
+                Password password = new Password(
+                    appName: appNameController.text,
+                    password: encryptedString,
+                    color: "#" + pickedColor.value.toRadixString(16),
+                    icon: iconNames[pickedIcon],
+                    userName: userNameController.text);
+                DBProvider.db.newPassword(password);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => PasswordHomepage()),
+                        (Route<dynamic> route) => false);
+              } else {
+                // print(Theme.of(context).accentColor);
+              }
+            },
+          ),
+        ),
       ),
     );
   }
