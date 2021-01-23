@@ -15,6 +15,7 @@ class ViewPassword extends StatefulWidget {
 
 class _ViewPasswordState extends State<ViewPassword> {
   final Password password;
+  var sizeIcon = 0.28;
 
   _ViewPasswordState(this.password);
 
@@ -85,7 +86,7 @@ class _ViewPasswordState extends State<ViewPassword> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-              height: size.height * 0.236,
+              height: size.height * sizeIcon,
               width: double.infinity,
               decoration: BoxDecoration(
                   color: color,
@@ -191,10 +192,13 @@ class _ViewPasswordState extends State<ViewPassword> {
                     IconButton(
                       onPressed: () async {
                         if (!decrypt && !didAuthenticate) {
-                          buildShowDialogBox(context);
+                          setState(() {
+                            sizeIcon = 0.2;
+                            buildShowDialogBox(context);
+                          });
                         } else if (!decrypt && didAuthenticate) {
                           String masterPass = await getMasterPass();
-                          decryptPass(password.password, masterPass);
+                          decryptPass(password.password, masterPass.trim());
                         } else if (decrypt) {
                           setState(() {
                             decrypt = !decrypt;
@@ -354,8 +358,9 @@ class _ViewPasswordState extends State<ViewPassword> {
             FlatButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                decryptPass(
-                    password.password, masterPassController.text.trim());
+                print(password.password);
+                print(masterPassController.text.trim());
+                decryptPass(password.password, masterPassController.text.trim());
                 masterPassController.clear();
                 if (!decrypt) {
                   final snackBar = SnackBar(

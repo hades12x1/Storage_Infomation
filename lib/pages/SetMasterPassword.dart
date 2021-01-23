@@ -91,11 +91,9 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
                   onPressed: () async {
                     if (masterPassController.text.isNotEmpty) {
                       saveMasterPass(masterPassController.text.trim());
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  PasswordHomepage()));
+                      Navigator.of(context).push(
+                          new MaterialPageRoute(builder: (BuildContext context) => new PasswordHomepage())
+                      );
                     } else {
                       showDialog(
                           context: context,
