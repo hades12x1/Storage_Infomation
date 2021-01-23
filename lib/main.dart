@@ -78,9 +78,7 @@ class _MyAppState extends State<MyApp> {
         title: 'Cipherly',
         theme: theme,
         home: loading
-            ? Center(
-          child: CircularProgressIndicator(),
-        )
+            ? Center(child: CircularProgressIndicator())
             : launch == 0 ? GreetingsPage() : PasswordHomepage(),
       ),
     );

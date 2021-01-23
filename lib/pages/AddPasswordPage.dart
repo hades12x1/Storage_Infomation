@@ -403,9 +403,10 @@ class _AddPasswordState extends State<AddPassword> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         backgroundColor: primaryColor,
-        child: Icon(Icons.add),
+        label: Text('Save'),
+        icon: Icon(Icons.add),
         onPressed: () {
           if (_formKey.currentState.validate()) {
             encryptPass(passwordController.text);

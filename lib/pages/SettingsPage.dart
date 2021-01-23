@@ -11,17 +11,9 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   SharedPreferences prefs;
-  Color selectedColor = Colors.red;
 
   openSharedPreferences() async {
     prefs = await SharedPreferences.getInstance();
-    setState(() {
-      if (Color(prefs.getInt('primaryColor')) == null) {
-        selectedColor = Color(0xff5153FF);
-      } else {
-        selectedColor = Color(prefs.getInt('primaryColor'));
-      }
-    });
   }
 
   @override
@@ -35,8 +27,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    Color primaryColor = Theme.of(context).primaryColor;
+    var size = MediaQuery
+        .of(context)
+        .size;
+    Color primaryColor = Theme
+        .of(context)
+        .primaryColor;
 
     return Scaffold(
       key: scaffoldKey,
@@ -75,48 +71,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
             ),
-          ),
-          Column(
-            children: <Widget>[
-              ListTile(
-                title: Text(
-                  "Accent Color",
-                  style: TextStyle(
-                    fontFamily: 'Title',
-                  ),
-                ),
-                subtitle: Text(
-                  "Change Accent Color",
-                  style: TextStyle(
-                    fontFamily: 'Subtitle',
-                  ),
-                ),
-              ),
-              MaterialColorPicker(
-                onColorChange: (Color color) {
-                  pickedColor = color;
-                  changeColor(color);
-                  setState(() {
-                    selectedColor = color;
-                  });
-                },
-                circleSize: 60,
-                shrinkWrap: true,
-                selectedColor: selectedColor,
-              ),
-            ],
           )
         ],
       ),
     );
-  }
-
-  void changeColor(Color color) {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt('primaryColor', color.value);
-
-    DynamicTheme.of(context).setThemeData(new ThemeData().copyWith(
-      primaryColor: color,
-    ));
   }
 }

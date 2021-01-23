@@ -7,7 +7,9 @@ class PasswordBloc {
   PasswordBloc() {
     getPasswords();
   }
+
   final _passwordController = StreamController<List<Password>>.broadcast();
+
   get passwords => _passwordController.stream;
 
   dispose() {
@@ -26,10 +28,12 @@ class PasswordBloc {
     DBProvider.db.newPassword(password);
     getPasswords();
   }
+
   update(Password password) {
     DBProvider.db.updatePassword(password);
     getPasswords();
   }
+
   delete(int id) {
     DBProvider.db.deletePassword(id);
     getPasswords();

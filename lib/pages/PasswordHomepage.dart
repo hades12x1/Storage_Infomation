@@ -1,4 +1,3 @@
-import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:storage_infomation/bloc/PasswordBloc.dart';
 import 'package:storage_infomation/database/Database.dart';
@@ -20,6 +19,9 @@ class PasswordHomepage extends StatefulWidget {
 
 class _PasswordHomepageState extends State<PasswordHomepage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  var passwords = List<Password>();
+  var passwordOnRam = List<Password>();
+
   int pickedIcon;
 
   List<Icon> icons = [
@@ -51,6 +53,17 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
   final bloc = PasswordBloc();
 
   @override
+  void initState() {
+    DBProvider.db.getAllPasswords().then((value) {
+      setState(() {
+        passwords.addAll(value);
+        passwordOnRam.addAll(value);
+      });
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     bloc.dispose();
     super.dispose();
@@ -70,94 +83,83 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Container(
-                margin: EdgeInsets.only(top: size.height * 0.05),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    IconButton(
+              margin: EdgeInsets.only(top: size.height * 0.05),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  IconButton(
                       icon: Icon(
                         Icons.menu_outlined,
                         color: primaryColor,
                       ),
-                      onPressed: () => _scaffoldKey.currentState.openDrawer()
-                    ),
-                    Text(
-                      "Cipherly",
-                      style: TextStyle(fontFamily: "Title", fontSize: 32, color: primaryColor),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.settings,
-                            color: primaryColor,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (BuildContext context) => SettingsPage()));
-                          },
+                      onPressed: () => _scaffoldKey.currentState.openDrawer()),
+                  Text(
+                    "Cipherly",
+                    style: TextStyle(
+                        fontFamily: "Title", fontSize: 32, color: primaryColor),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          Icons.settings,
+                          color: primaryColor,
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) => SettingsPage()));
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular(20))
-            ),
+                borderRadius:
+                    BorderRadius.vertical(bottom: Radius.circular(20))),
             padding: EdgeInsets.all(10.0),
             child: Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                   color: Color.fromRGBO(244, 243, 243, 1),
-                  borderRadius: BorderRadius.circular(15)
-              ),
+                  borderRadius: BorderRadius.circular(15)),
               child: TextField(
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    prefixIcon: Icon(Icons.search, color: Colors.black87),
-                    hintText: "Search you're looking for",
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 15)
-                ),
-                onChanged: (text){
-                  // Todo on change - chuyenns
-                }
-              ),
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      prefixIcon: Icon(Icons.search, color: Colors.black87),
+                      hintText: "Search you're looking for",
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 15)),
+                  onChanged: (text) {
+                    text = text.toLowerCase();
+                    setState(() {
+                      if (text.isEmpty) {
+                        DBProvider.db.getAllPasswords().then((value) {
+                          passwords.addAll(value);
+                        });
+                      } else {
+                        passwords = passwordOnRam.where((element) {
+                          var appName = element.appName.toLowerCase();
+                          return appName.contains(text);
+                        }).toList();
+                      }
+                    });
+                  }),
             ),
           ),
           Expanded(
-            child: StreamBuilder<List<Password>>(
-              stream: bloc.passwords,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data.length > 0) {
-                    return ListView.builder(
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return _listPassword(index, snapshot);
-                      },
-                    );
-                  } else {
-                    return Center(
-                      child: Text(
-                        "No Passwords Saved. \nClick \"+\" button to add a password",
-                        textAlign: TextAlign.center,
-                        // style: TextStyle(color: Colors.black54),
-                      ),
-                    );
-                  }
-                }
-                else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
-          ),
+              child: ListView.builder(
+            itemCount: passwords.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _listPassword(index);
+            },
+          )),
         ],
       ),
       floatingActionButton: Container(
@@ -165,12 +167,13 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: FloatingActionButton(
+            child: Icon(Icons.add_rounded),
             backgroundColor: primaryColor,
-            child: Icon(Icons.add),
             onPressed: () async {
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (BuildContext context) => AddPassword()));
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => AddPassword()));
             },
           ),
         ),
@@ -178,8 +181,8 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
     );
   }
 
-  _listPassword(index, AsyncSnapshot snapshot) {
-    Password password = snapshot.data[index];
+  _listPassword(index) {
+    Password password = passwords[index];
     int i = 0;
     i = iconNames.indexOf(password.icon);
     Color color = hexToColor(password.color);
@@ -190,7 +193,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
         //To delete
         DBProvider.db.deletePassword(item.id);
         setState(() {
-          snapshot.data.removeAt(index);
+          passwords.removeAt(index);
         });
         //To show a snackbar with the UNDO button
         Scaffold.of(context).showSnackBar(SnackBar(
@@ -200,7 +203,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                 onPressed: () {
                   DBProvider.db.newPassword(item);
                   setState(() {
-                    snapshot.data.insert(index, item);
+                    passwords.insert(index, item);
                   });
                 })));
       },
@@ -208,7 +211,8 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
         onTap: () {
           Navigator.push(
               context,
-              MaterialPageRoute(builder: (BuildContext context) => ViewPassword(password: password)));
+              MaterialPageRoute(
+                  builder: (BuildContext context) => ViewPassword(password: password)));
         },
         child: ListTile(
           title: Text(
@@ -220,21 +224,20 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
           leading: Container(
               height: 48,
               width: 48,
-              child: CircleAvatar(
-                  backgroundColor: color, child: icons[i])),
+              child: CircleAvatar(backgroundColor: color, child: icons[i])),
           subtitle: password.userName != ""
               ? Text(
-            password.userName,
-            style: TextStyle(
-              fontFamily: 'Subtitle',
-            ),
-          )
+                  password.userName,
+                  style: TextStyle(
+                    fontFamily: 'Subtitle',
+                  ),
+                )
               : Text(
-            "No username specified",
-            style: TextStyle(
-              fontFamily: 'Subtitle',
-            ),
-          ),
+                  "No username specified",
+                  style: TextStyle(
+                    fontFamily: 'Subtitle',
+                  ),
+                ),
         ),
       ),
     );
