@@ -39,6 +39,11 @@ class MainDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.person),
+            title: Text('Group Account', style: TextStyle(fontSize: 18),),
+            onTap: null,
+          ),
+          ListTile(
+            leading: Icon(Icons.person),
             title: Text('Profile', style: TextStyle(fontSize: 18),),
             onTap: null,
           ),

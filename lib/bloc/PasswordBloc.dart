@@ -18,6 +18,10 @@ class PasswordBloc {
     _passwordController.sink.add(await DBProvider.db.getAllPasswords());
   }
 
+  getPasswordByAppName(String appName) async {
+    return await DBProvider.db.getPasswordByAppName(appName);
+  }
+
   add(Password password) {
     DBProvider.db.newPassword(password);
     getPasswords();

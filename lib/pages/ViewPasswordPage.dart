@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:storage_infomation/model/PasswordModel.dart';
@@ -15,6 +16,7 @@ class ViewPassword extends StatefulWidget {
 
 class _ViewPasswordState extends State<ViewPassword> {
   final Password password;
+
   _ViewPasswordState(this.password);
 
   TextEditingController masterPassController = TextEditingController();
@@ -50,6 +52,7 @@ class _ViewPasswordState extends State<ViewPassword> {
   String decrypted = "";
   Color color;
   int index;
+
   Color hexToColor(String code) {
     return new Color(int.parse(code.substring(1, 9), radix: 16) + 0xFF000000);
   }
@@ -122,23 +125,49 @@ class _ViewPasswordState extends State<ViewPassword> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Username",
-                    style: TextStyle(fontFamily: 'Title', fontSize: 20),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 8),
-                  child: Text(
-                    password.userName,
-                    style: TextStyle(
-                      fontFamily: 'Subtitle',
-                      fontSize: 20,
-                      // color: Colors.black54
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "Username",
+                            style: TextStyle(fontFamily: 'Title', fontSize: 20),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 270,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              password.userName,
+                              style: TextStyle(
+                                fontFamily: 'Subtitle',
+                                fontSize: 20,
+                                // color: Colors.black54
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                    IconButton(
+                      icon: Icon(Icons.copy),
+                      onPressed: () async {
+                        Clipboard.setData(new ClipboardData(text: password.userName));
+                        scaffoldKey.currentState.showSnackBar(
+                          SnackBar(
+                            content: Text("Copied Username to Clipboard!"),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                    )
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -154,14 +183,17 @@ class _ViewPasswordState extends State<ViewPassword> {
                             style: TextStyle(fontFamily: 'Title', fontSize: 20),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 8),
-                          child: Text(
-                            decrypt ? decrypted : password.password,
-                            style: TextStyle(
-                              fontFamily: 'Subtitle',
-                              fontSize: 20,
-                              // color: Colors.black54
+                        SizedBox(
+                          width: 270,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              decrypt ? decrypted : password.password,
+                              style: TextStyle(
+                                fontFamily: 'Subtitle',
+                                fontSize: 20,
+                                // color: Colors.black54
+                              ),
                             ),
                           ),
                         ),
@@ -181,6 +213,27 @@ class _ViewPasswordState extends State<ViewPassword> {
                         }
                       },
                       icon: decrypt ? Icon(Icons.lock_open) : Icon(Icons.lock),
+                    ),
+                    IconButton(
+                      icon: decrypt ? Icon(Icons.copy) : Icon(Icons.data_usage),
+                      onPressed: () async {
+                        if(decrypt) {
+                          Clipboard.setData(new ClipboardData(text: decrypted));
+                          scaffoldKey.currentState.showSnackBar(
+                            SnackBar(
+                              content: Text("Copied password Clipboard!"),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                        } else {
+                          scaffoldKey.currentState.showSnackBar(
+                            SnackBar(
+                              content: Text("Please unlock account to coppy!"),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      },
                     )
                   ],
                 ),

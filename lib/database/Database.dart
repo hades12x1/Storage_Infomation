@@ -42,6 +42,12 @@ class DBProvider {
     return res;
   }
 
+  getPasswordByAppName(String  appName) async {
+    final db = await database;
+    var res = await db.query("Passwords", where: "app_name LIKE %?%", whereArgs: [appName]);
+    return res.isNotEmpty ? res.map((c) => Password.fromJson(c)).toList() : [];
+  }
+
   getPassword(int id) async {
     final db = await database;
     var res = await db.query("Passwords", where: "id = ?", whereArgs: [id]);

@@ -120,10 +120,13 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
               child: TextField(
                 decoration: InputDecoration(
                     border: InputBorder.none,
-                    prefixIcon: Icon(Icons.search, color: Colors.black87,),
+                    prefixIcon: Icon(Icons.search, color: Colors.black87),
                     hintText: "Search you're looking for",
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 15)
                 ),
+                onChanged: (text){
+                  // Todo on change - chuyenns
+                }
               ),
             ),
           ),
@@ -136,69 +139,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                     return ListView.builder(
                       itemCount: snapshot.data.length,
                       itemBuilder: (BuildContext context, int index) {
-                        Password password = snapshot.data[index];
-                        int i = 0;
-                        i = iconNames.indexOf(password.icon);
-                        Color color = hexToColor(password.color);
-                        return Dismissible(
-                          key: ObjectKey(password.id),
-                          onDismissed: (direction) {
-                            var item = password;
-                            //To delete
-                            DBProvider.db.deletePassword(item.id);
-                            setState(() {
-                              snapshot.data.removeAt(index);
-                            });
-                            //To show a snackbar with the UNDO button
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                                content: Text("Password deleted"),
-                                action: SnackBarAction(
-                                    label: "UNDO",
-                                    onPressed: () {
-                                      DBProvider.db.newPassword(item);
-                                      setState(() {
-                                        snapshot.data.insert(index, item);
-                                      });
-                                    })));
-                          },
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          ViewPassword(
-                                            password: password,
-                                          )));
-                            },
-                            child: ListTile(
-                              title: Text(
-                                password.appName,
-                                style: TextStyle(
-                                  fontFamily: 'Title',
-                                ),
-                              ),
-                              leading: Container(
-                                  height: 48,
-                                  width: 48,
-                                  child: CircleAvatar(
-                                      backgroundColor: color, child: icons[i])),
-                              subtitle: password.userName != ""
-                                  ? Text(
-                                      password.userName,
-                                      style: TextStyle(
-                                        fontFamily: 'Subtitle',
-                                      ),
-                                    )
-                                  : Text(
-                                      "No username specified",
-                                      style: TextStyle(
-                                        fontFamily: 'Subtitle',
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        );
+                        return _listPassword(index, snapshot);
                       },
                     );
                   } else {
@@ -210,7 +151,8 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                       ),
                     );
                   }
-                } else {
+                }
+                else {
                   return Center(child: CircularProgressIndicator());
                 }
               },
@@ -230,6 +172,68 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                   context,
                   MaterialPageRoute(builder: (BuildContext context) => AddPassword()));
             },
+          ),
+        ),
+      ),
+    );
+  }
+
+  _listPassword(index, AsyncSnapshot snapshot) {
+    Password password = snapshot.data[index];
+    int i = 0;
+    i = iconNames.indexOf(password.icon);
+    Color color = hexToColor(password.color);
+    return Dismissible(
+      key: ObjectKey(password.id),
+      onDismissed: (direction) {
+        var item = password;
+        //To delete
+        DBProvider.db.deletePassword(item.id);
+        setState(() {
+          snapshot.data.removeAt(index);
+        });
+        //To show a snackbar with the UNDO button
+        Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text("Password deleted"),
+            action: SnackBarAction(
+                label: "UNDO",
+                onPressed: () {
+                  DBProvider.db.newPassword(item);
+                  setState(() {
+                    snapshot.data.insert(index, item);
+                  });
+                })));
+      },
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (BuildContext context) => ViewPassword(password: password)));
+        },
+        child: ListTile(
+          title: Text(
+            password.appName,
+            style: TextStyle(
+              fontFamily: 'Title',
+            ),
+          ),
+          leading: Container(
+              height: 48,
+              width: 48,
+              child: CircleAvatar(
+                  backgroundColor: color, child: icons[i])),
+          subtitle: password.userName != ""
+              ? Text(
+            password.userName,
+            style: TextStyle(
+              fontFamily: 'Subtitle',
+            ),
+          )
+              : Text(
+            "No username specified",
+            style: TextStyle(
+              fontFamily: 'Subtitle',
+            ),
           ),
         ),
       ),
