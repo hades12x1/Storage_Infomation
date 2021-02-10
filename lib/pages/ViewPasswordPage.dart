@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:storage_infomation/model/PasswordModel.dart';
 
 class ViewPassword extends StatefulWidget {
@@ -65,11 +66,20 @@ class _ViewPasswordState extends State<ViewPassword> {
     return masterPass;
   }
 
+  authenticate() async {
+    var localAuth = LocalAuthentication();
+    didAuthenticate = await localAuth.authenticateWithBiometrics(
+        localizedReason: 'Please authenticate to view password',
+        stickyAuth: true
+    );
+  }
+
   @override
   void initState() {
     print(password.color);
     color = hexToColor(password.color);
     index = iconNames.indexOf(password.icon);
+    authenticate();
     super.initState();
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:storage_infomation/pages/PasswordHomepage.dart';
 
 class SetMasterPassword extends StatefulWidget {
@@ -24,9 +25,23 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
     await storage.write(key: 'master', value: masterPass);
   }
 
+  authenticate() async {
+    var localAuth = LocalAuthentication();
+    bool didAuthenticate = await localAuth.authenticateWithBiometrics(
+        localizedReason: 'Please authenticate to change master password',
+        stickyAuth: true);
+
+    if (!didAuthenticate) {
+      Navigator.pop(context);
+    }
+
+    print(didAuthenticate);
+  }
+
   @override
   void initState() {
     super.initState();
+    authenticate();
     getMasterPass();
   }
 
