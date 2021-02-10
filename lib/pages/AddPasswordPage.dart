@@ -97,12 +97,6 @@ class _AddPasswordState extends State<AddPassword> {
     Colors.green
   ];
 
-  // Future<Null> getMasterPass() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String masterPass = prefs.getString('master') ?? "";
-  //   masterPassString = masterPass;
-  // }
-
   Future<Null> getMasterPass() async {
     final storage = new FlutterSecureStorage();
     String masterPass = await storage.read(key: 'master') ?? '';
@@ -136,7 +130,7 @@ class _AddPasswordState extends State<AddPassword> {
   double passwordStrength = 0.0;
   Color passwordStrengthBarColor = Colors.red;
   bool obscureText = true;
-  String show_hide = 'Show Password';
+  String showHide = 'Show Password';
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -288,13 +282,13 @@ class _AddPasswordState extends State<AddPassword> {
                             setState(() {
                               obscureText = !obscureText;
                               if (obscureText) {
-                                show_hide = 'Show Password';
+                                showHide = 'Show Password';
                               } else {
-                                show_hide = 'Hide Password';
+                                showHide = 'Hide Password';
                               }
                             });
                           },
-                          child: Text(show_hide),
+                          child: Text(showHide),
                         ),
                         FlatButton(
                           onPressed: () {
