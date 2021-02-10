@@ -103,30 +103,6 @@ class _AddPasswordState extends State<AddPassword> {
     masterPassString = masterPass;
   }
 
-  authenticate() async {
-    try {
-      var localAuth = LocalAuthentication();
-      print(await localAuth.getAvailableBiometrics());
-      bool didAuthenticate = await localAuth.authenticateWithBiometrics(
-        localizedReason: 'Please authenticate to add new password',
-      );
-
-      print(didAuthenticate);
-
-      if (didAuthenticate == false) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => PasswordHomepage()),
-            (Route<dynamic> route) => false);
-      }
-    } on PlatformException catch (e) {
-      if (e.code == auth_error.notAvailable) {
-        // Handle this exception here.
-      }
-    }
-  }
-
   double passwordStrength = 0.0;
   Color passwordStrengthBarColor = Colors.red;
   bool obscureText = true;
@@ -138,7 +114,6 @@ class _AddPasswordState extends State<AddPassword> {
     pickedColor = Colors.orange;
     getMasterPass();
     pickedIcon = 0;
-    // authenticate();
     super.initState();
   }
 
