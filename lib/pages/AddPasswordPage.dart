@@ -3,7 +3,6 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:local_auth/error_codes.dart' as auth_error;
 import 'package:flutter/services.dart';
 import 'package:password_strength/password_strength.dart';
 import 'package:storage_infomation/database/Database.dart';
@@ -246,7 +245,8 @@ class _AddPasswordState extends State<AddPassword> {
                       children: <Widget>[
                         FlatButton(
                           onPressed: () {
-                            String pass = randomAlphaNumeric(10);
+                            //Create a password with letters, uppercase letters, numbers but not special chars with 17 chars
+                            String pass = generatePassword(true, true, true, true, 15);
                             passwordController.text = pass;
                             checkPassStrength(pass);
                           },
