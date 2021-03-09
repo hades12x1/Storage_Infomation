@@ -29,13 +29,16 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
     var localAuth = LocalAuthentication();
     bool didAuthenticate = await localAuth.authenticateWithBiometrics(
         localizedReason: 'Please authenticate to change master password',
-        stickyAuth: true);
+        stickyAuth: true
+    );
 
-    if (!didAuthenticate) {
-      Navigator.pop(context);
+    if (didAuthenticate) {
+      Navigator
+          .of(context)
+          .push(new MaterialPageRoute(builder: (BuildContext context) => new PasswordHomepage()));
+      return;
     }
-
-    print(didAuthenticate);
+    print("Authentication with fingerprint fail!");
   }
 
   @override
