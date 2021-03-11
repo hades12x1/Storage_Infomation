@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:storage_infomation/pages/GreetingsPage.dart';
 import 'package:storage_infomation/pages/PasswordHomepage.dart';
+const loginTypePrefsKey = "login_type";
 
 void main() {
   runApp(MyApp());
