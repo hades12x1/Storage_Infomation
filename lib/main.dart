@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:storage_infomation/pages/GreetingsPage.dart';
 import 'package:storage_infomation/pages/PasswordHomepage.dart';
+import 'package:storage_infomation/repository/KeyRepository.dart';
+import 'package:storage_infomation/repository/PasswordRepository.dart';
 const loginTypePrefsKey = "login_type";
 
 void main() {
+  _prepareDI();
   runApp(MyApp());
 }
 
@@ -67,4 +71,10 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+_prepareDI() {
+  final getIt = GetIt.I;
+  getIt.registerSingleton<PasswordRepository>(RsaPasswordRepository());
+  getIt.registerSingleton<KeyRepository>(RsaKeysRepository());
 }

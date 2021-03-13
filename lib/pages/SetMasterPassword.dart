@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:storage_infomation/pages/PasswordHomepage.dart';
+import 'package:storage_infomation/repository/KeyRepository.dart';
+import 'package:storage_infomation/repository/PasswordRepository.dart';
 
 class SetMasterPassword extends StatefulWidget {
   @override
@@ -10,32 +13,34 @@ class SetMasterPassword extends StatefulWidget {
 
 class _SetMasterPasswordState extends State<SetMasterPassword> {
   TextEditingController masterPassController = TextEditingController();
+  final _keyRepository = GetIt.I.get<KeyRepository>();
+  final _passwordRepository = GetIt.I.get<PasswordRepository>();
 
-  Future<Null> getMasterPass() async {    
-
-    final storage = new FlutterSecureStorage();   
+  Future<Null> getMasterPass() async {
+    final storage = new FlutterSecureStorage();
     String masterPass = await storage.read(key: 'master') ?? '';
     masterPassController.text = masterPass;
-
   }
 
-  saveMasterPass(String masterPass) async{
-    final storage = new FlutterSecureStorage();   
-
-    await storage.write(key: 'master', value: masterPass);
+  saveMasterPass(String password) async {
+    print("Save password success $password");
+    // Todo validate password empty
+    final keyPair = await _keyRepository.generateKeys();
+    await _keyRepository.storePasswordEncryptedKeys(password, keyPair);
+    if (_passwordRepository is RsaPasswordRepository) {
+      (_passwordRepository as RsaPasswordRepository).setKeys(keyPair);
+    }
   }
 
   authenticate() async {
     var localAuth = LocalAuthentication();
     bool didAuthenticate = await localAuth.authenticateWithBiometrics(
         localizedReason: 'Please authenticate to change master password',
-        stickyAuth: true
-    );
+        stickyAuth: true);
 
     if (didAuthenticate) {
-      Navigator
-          .of(context)
-          .push(new MaterialPageRoute(builder: (BuildContext context) => new PasswordHomepage()));
+      Navigator.of(context).push(new MaterialPageRoute(
+          builder: (BuildContext context) => new PasswordHomepage()));
       return;
     }
     print("Authentication with fingerprint fail!");
@@ -64,10 +69,9 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
                 margin: EdgeInsets.only(top: size.height * 0.05),
                 child: Text("Master Password",
                     style: TextStyle(
-                      fontFamily: "Title",
-                      fontSize: 32,
-                      color: primaryColor
-                    ))),
+                        fontFamily: "Title",
+                        fontSize: 32,
+                        color: primaryColor))),
           ),
           Padding(
               padding: const EdgeInsets.all(16.0),
@@ -109,9 +113,8 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
                   onPressed: () async {
                     if (masterPassController.text.isNotEmpty) {
                       saveMasterPass(masterPassController.text.trim());
-                      Navigator.of(context).push(
-                          new MaterialPageRoute(builder: (BuildContext context) => new PasswordHomepage())
-                      );
+                      Navigator.of(context).push(new MaterialPageRoute(
+                          builder: (BuildContext context) => new PasswordHomepage()));
                     } else {
                       showDialog(
                           context: context,
