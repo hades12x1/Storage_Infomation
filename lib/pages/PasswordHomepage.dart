@@ -12,9 +12,9 @@ class PasswordHomepage extends StatefulWidget {
   @override
   _PasswordHomepageState createState() => _PasswordHomepageState();
   final keyRepository = GetIt.I.get<KeyRepository>();
-  final PasswordRepository passwordRepository;
+  final PasswordRepository passwordRepo;
 
-  PasswordHomepage({this.passwordRepository});
+  PasswordHomepage({this.passwordRepo});
 }
 
 class _PasswordHomepageState extends State<PasswordHomepage> {
@@ -53,12 +53,12 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
 
   @override
   void initState() {
-    if (widget.passwordRepository == null) {
+    if (widget.passwordRepo == null) {
       super.initState();
       _buildShowDialogBox(context);
     } else {
       super.initState();
-      widget.passwordRepository.retrievePasswords().then((value) {
+      widget.passwordRepo.retrievePasswords().then((value) {
         setState(() {
           passwords.addAll(value);
           passwordOnRam.addAll(value);
@@ -139,7 +139,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                     text = text.toLowerCase();
                     setState(() {
                       if (text.isEmpty) {
-                        widget.passwordRepository.retrievePasswords().then((value) {
+                        widget.passwordRepo.retrievePasswords().then((value) {
                           passwords.addAll(value);
                         });
                       } else {
@@ -171,7 +171,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
             onPressed: () async {
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (BuildContext context) => AddPassword(passwordRepo: widget.passwordRepository)));
+                  MaterialPageRoute(builder: (BuildContext context) => AddPassword(passwordRepo: widget.passwordRepo)));
             },
           ),
         ),
@@ -189,7 +189,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
       onDismissed: (direction) {
         var item = password;
         //To delete
-        widget.passwordRepository.removePassword(item);
+        widget.passwordRepo.removePassword(item);
         setState(() {
           passwords.removeAt(index);
         });
@@ -199,7 +199,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
             action: SnackBarAction(
                 label: "UNDO",
                 onPressed: () {
-                  widget.passwordRepository.addEntry(item);
+                  widget.passwordRepo.addEntry(item);
                   setState(() {
                     passwords.insert(index, item);
                   });
@@ -210,7 +210,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
         onTap: () {
           Navigator.push(
               context,
-              MaterialPageRoute(builder: (BuildContext context) => ViewPassword(password: password)));
+              MaterialPageRoute(builder: (BuildContext context) => ViewPassword(password: password, passwordRepo: widget.passwordRepo,)));
         },
         child: ListTile(
           title: Text(
@@ -284,7 +284,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                     final keyPair = await widget.keyRepository.retrievePasswordEncryptedKeys(masterPassController.text);
                     final _passwordRepository = GetIt.I.get<PasswordRepository>();
                     (_passwordRepository as RsaPasswordRepository).setKeys(keyPair);
-                    passHomePage = new PasswordHomepage(passwordRepository: _passwordRepository);
+                    passHomePage = new PasswordHomepage(passwordRepo: _passwordRepository);
                   } catch(e) {
                     passHomePage = new PasswordHomepage();
                   } finally {

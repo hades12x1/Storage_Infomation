@@ -395,7 +395,7 @@ class _AddPasswordState extends State<AddPassword> {
                       context,
                       new MaterialPageRoute(
                           builder: (BuildContext context) =>
-                          new PasswordHomepage(passwordRepository: widget.passwordRepo)))
+                          new PasswordHomepage(passwordRepo: widget.passwordRepo)))
                 });
               } else {
                 // print(Theme.of(context).accentColor);

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:get_it/get_it.dart';
+import 'package:storage_infomation/repository/KeyRepository.dart';
 import 'package:storage_infomation/repository/PasswordRepository.dart';
 
 class ViewPassword extends StatefulWidget {
+  final keyRepo = GetIt.I.get<KeyRepository>();
+  final PasswordRepository passwordRepo;
   final Password password;
 
-  const ViewPassword({Key key, this.password}) : super(key: key);
+  ViewPassword({Key key, this.password, this.passwordRepo}) : super(key: key);
 
   @override
   _ViewPasswordState createState() => _ViewPasswordState(password);
@@ -50,7 +52,7 @@ class _ViewPasswordState extends State<ViewPassword> {
     "Icon 10",
   ];
   bool decrypt = false;
-  String decrypted = "";
+  String decrypted = "**************";
   Color color;
   int index;
 
@@ -58,20 +60,10 @@ class _ViewPasswordState extends State<ViewPassword> {
     return new Color(int.parse(code.substring(1, 9), radix: 16) + 0xFF000000);
   }
 
-  bool didAuthenticate = false;
-
   Future<String> getMasterPass() async {
     final storage = new FlutterSecureStorage();
     String masterPass = await storage.read(key: 'master') ?? '';
     return masterPass;
-  }
-
-  authenticate() async {
-    var localAuth = LocalAuthentication();
-    didAuthenticate = await localAuth.authenticateWithBiometrics(
-        localizedReason: 'Please authenticate to view password',
-        stickyAuth: true
-    );
   }
 
   @override
@@ -79,7 +71,6 @@ class _ViewPasswordState extends State<ViewPassword> {
     print(password.color);
     color = hexToColor(password.color);
     index = iconNames.indexOf(password.icon);
-    authenticate();
     super.initState();
   }
 
@@ -189,7 +180,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              decrypt ? decrypted : password.password,
+                              decrypt ? password.password : decrypted,
                               style: TextStyle(
                                 fontFamily: 'Subtitle',
                                 fontSize: 20,
@@ -201,19 +192,9 @@ class _ViewPasswordState extends State<ViewPassword> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        if (!decrypt && !didAuthenticate) {
-                          setState(() {
-                            sizeIcon = 0.2;
-                            buildShowDialogBox(context);
-                          });
-                        } else if (!decrypt && didAuthenticate) {
-                          String masterPass = await getMasterPass();
-                          decryptPass(password.password, masterPass.trim());
-                        } else if (decrypt) {
                           setState(() {
                             decrypt = !decrypt;
                           });
-                        }
                       },
                       icon: decrypt ? Icon(Icons.lock_open) : Icon(Icons.lock),
                     ),
@@ -334,83 +315,5 @@ class _ViewPasswordState extends State<ViewPassword> {
         ],
       ),
     );
-  }
-
-  Future buildShowDialogBox(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Enter Master Password"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                "To decrypt the password enter your master password:",
-                style: TextStyle(fontFamily: 'Subtitle'),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  obscureText: true,
-                  maxLength: 32,
-                  decoration: InputDecoration(
-                      hintText: "Master Pass",
-                      hintStyle: TextStyle(fontFamily: "Subtitle"),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16))),
-                  controller: masterPassController,
-                ),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                decryptPass(password.password, masterPassController.text.trim());
-                masterPassController.clear();
-                if (!decrypt) {
-                  final snackBar = SnackBar(
-                    content: Text(
-                      'Wrong Master Password',
-                      style: TextStyle(fontFamily: "Subtitle"),
-                    ),
-                  );
-                  scaffoldKey.currentState.showSnackBar(snackBar);
-                }
-              },
-              child: Text("DONE"),
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  decryptPass(String encryptedPass, String masterPass) {
-    String keyString = masterPass;
-    if (keyString.length < 32) {
-      int count = 32 - keyString.length;
-      for (var i = 0; i < count; i++) {
-        keyString += ".";
-      }
-    }
-
-    final iv = encrypt.IV.fromLength(16);
-    final key = encrypt.Key.fromUtf8(keyString);
-
-    try {
-      final encrypter = encrypt.Encrypter(encrypt.AES(key));
-      final d = encrypter.decrypt64(encryptedPass, iv: iv);
-      setState(() {
-        decrypted = d;
-        decrypt = true;
-      });
-    } catch (exception) {
-      setState(() {
-        decrypted = "Wrong Master Password";
-      });
-    }
   }
 }
