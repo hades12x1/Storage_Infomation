@@ -23,7 +23,6 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
   }
 
   saveMasterPass(String password) async {
-    print("Save password success $password");
     // Todo validate password empty
     final keyPair = await _keyRepository.generateKeys();
     await _keyRepository.storePasswordEncryptedKeys(password, keyPair);

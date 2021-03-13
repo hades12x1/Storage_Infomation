@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:storage_infomation/pages/SetMasterPassword.dart';
+import 'package:get_it/get_it.dart';
+import 'package:storage_infomation/pages/PasswordHomepage.dart';
+import 'package:storage_infomation/repository/KeyRepository.dart';
+import 'package:storage_infomation/repository/PasswordRepository.dart';
 
 class SettingsPage extends StatefulWidget {
+  final keyRepository = GetIt.I.get<KeyRepository>();
+  final PasswordRepository passwordRepo;
+
+  SettingsPage({this.passwordRepo});
+
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  SharedPreferences prefs;
-  TextEditingController masterPassController = TextEditingController();
-
-  openSharedPreferences() async {
-    prefs = await SharedPreferences.getInstance();
-  }
+  TextEditingController currentMasterPassCtl = TextEditingController();
+  TextEditingController newMasterPassCtl = TextEditingController();
 
   @override
   void initState() {
-    openSharedPreferences();
     super.initState();
   }
 
@@ -53,10 +54,6 @@ class _SettingsPageState extends State<SettingsPage> {
           InkWell(
             onTap: () {
               buildShowDialogBox(context);
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (BuildContext context) => SetMasterPassword()));
             },
             child: ListTile(
               title: Text(
@@ -97,35 +94,55 @@ class _SettingsPageState extends State<SettingsPage> {
                   obscureText: true,
                   maxLength: 32,
                   decoration: InputDecoration(
-                      hintText: "Master Pass",
+                      hintText: "Current Master Pass",
                       hintStyle: TextStyle(fontFamily: "Subtitle"),
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16))),
-                  controller: masterPassController,
+                          borderRadius: BorderRadius.circular(14))),
+                  controller: currentMasterPassCtl,
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 8.0, right: 8.0, bottom: 4.0, top: 4.0),
+                child: TextField(
+                  obscureText: true,
+                  maxLength: 32,
+                  decoration: InputDecoration(
+                      hintText: "New Master Password",
+                      hintStyle: TextStyle(fontFamily: "Subtitle"),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14))),
+                  controller: newMasterPassCtl,
+                ),
+              )
             ],
           ),
           actions: <Widget>[
             FlatButton(
-              onPressed: () {
-                getMasterPass().then((value) {
-                    if(value == masterPassController.text) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => SetMasterPassword()));
-                    } else {
-                      Navigator.of(context).pop();
-                      final snackBar = SnackBar(
-                        content: Text(
-                          'Wrong Master Password',
-                          style: TextStyle(fontFamily: "Subtitle"),
-                        ),
-                      );
-                      scaffoldKey.currentState.showSnackBar(snackBar);
-                    }
-                });
+              onPressed: () async {
+                try {
+                  final keyPair = await widget.keyRepository.retrievePasswordEncryptedKeys(currentMasterPassCtl.text);
+                  PasswordRepository passRepo = GetIt.I.get<PasswordRepository>();
+                  (passRepo as RsaPasswordRepository).setKeys(keyPair);
+                  widget.keyRepository.clearKeys().whenComplete(() => {
+                    widget.keyRepository.storePasswordEncryptedKeys(newMasterPassCtl.text, keyPair),
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(builder: (BuildContext context) => new PasswordHomepage(passwordRepo: passRepo))
+                  )
+                  });
+                } catch (e) {
+                  Navigator.of(context).pop();
+                  currentMasterPassCtl.clear();
+                  newMasterPassCtl.clear();
+                  final snackBar = SnackBar(
+                    content: Text(
+                      'Wrong Master Password',
+                      style: TextStyle(fontFamily: "Subtitle"),
+                    ),
+                  );
+                  scaffoldKey.currentState.showSnackBar(snackBar);
+                }
               },
               child: Text("DONE"),
             )
@@ -133,10 +150,5 @@ class _SettingsPageState extends State<SettingsPage> {
         );
       },
     );
-  }
-
-  Future<String> getMasterPass() async {
-    final storage = new FlutterSecureStorage();
-    return await storage.read(key: 'master') ?? '';
   }
 }

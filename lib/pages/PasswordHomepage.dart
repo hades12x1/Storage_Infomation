@@ -108,7 +108,10 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                           color: primaryColor,
                         ),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SettingsPage()));
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  SettingsPage(passwordRepo: widget.passwordRepo))
+                          );
                         },
                       ),
                     ],
