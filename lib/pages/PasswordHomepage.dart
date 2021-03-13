@@ -58,13 +58,13 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
       _buildShowDialogBox(context);
     } else {
       super.initState();
-    }
-    widget.passwordRepository.retrievePasswords().then((value) {
-      setState(() {
-        passwords.addAll(value);
-        passwordOnRam.addAll(value);
+      widget.passwordRepository.retrievePasswords().then((value) {
+        setState(() {
+          passwords.addAll(value);
+          passwordOnRam.addAll(value);
+        });
       });
-    });
+    }
   }
 
   @override
