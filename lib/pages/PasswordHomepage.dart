@@ -59,17 +59,17 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
   @override
   void initState() {
     if (widget.passwordRepository == null) {
-      DBProvider.db.getAllPasswords().then((value) {
-        setState(() {
-          passwords.addAll(value);
-          passwordOnRam.addAll(value);
-        });
-      });
       super.initState();
       _buildShowDialogBox(context);
     } else {
       super.initState();
     }
+    DBProvider.db.getAllPasswords().then((value) {
+      setState(() {
+        passwords.addAll(value);
+        passwordOnRam.addAll(value);
+      });
+    });
   }
 
   @override
@@ -80,12 +80,8 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery
-        .of(context)
-        .size;
-    Color primaryColor = Theme
-        .of(context)
-        .primaryColor;
+    var size = MediaQuery.of(context).size;
+    Color primaryColor = Theme.of(context).primaryColor;
     return Scaffold(
       key: _scaffoldKey,
       drawer: new MainDrawer(),
@@ -118,11 +114,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                           color: primaryColor,
                         ),
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      SettingsPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SettingsPage()));
                         },
                       ),
                     ],
@@ -185,8 +177,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
             onPressed: () async {
               Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => AddPassword()));
+                  MaterialPageRoute(builder: (BuildContext context) => AddPassword(passwordRepo: widget.passwordRepository)));
             },
           ),
         ),
@@ -218,7 +209,8 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                   setState(() {
                     passwords.insert(index, item);
                   });
-                })));
+                }))
+        );
       },
       child: InkWell(
         onTap: () {

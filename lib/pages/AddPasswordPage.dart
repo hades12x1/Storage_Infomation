@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:get_it/get_it.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:password_strength/password_strength.dart';
 import 'package:storage_infomation/database/Database.dart';
 import 'package:storage_infomation/model/PasswordModel.dart';
+import 'package:storage_infomation/repository/KeyRepository.dart';
 
 import '../random_string.dart';
 import 'PasswordHomepage.dart';
 
 class AddPassword extends StatefulWidget {
-  AddPassword({Key key}) : super(key: key);
+  final keyRepository = GetIt.I.get<KeyRepository>();
+  final passwordRepo;
+
+  AddPassword({Key key, this.passwordRepo}) : super(key: key);
 
   _AddPasswordState createState() => _AddPasswordState();
 }
@@ -263,7 +268,7 @@ class _AddPasswordState extends State<AddPassword> {
                               }
                             });
                           },
-                          child: Text(showHide),
+                          child: Text(showHide)
                         ),
                         FlatButton(
                           onPressed: () {
@@ -381,11 +386,13 @@ class _AddPasswordState extends State<AddPassword> {
                     note: noteController.text
                 );
                 DBProvider.db.newPassword(password);
-                Navigator.pushAndRemoveUntil(
+                Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => PasswordHomepage()),
-                        (Route<dynamic> route) => false);
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                        new PasswordHomepage(passwordRepository: widget.passwordRepo)
+                    )
+                );
               } else {
                 // print(Theme.of(context).accentColor);
               }
