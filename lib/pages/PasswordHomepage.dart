@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:storage_infomation/bloc/PasswordBloc.dart';
 import 'package:storage_infomation/database/Database.dart';
 import 'package:storage_infomation/model/PasswordModel.dart';
 import 'package:storage_infomation/pages/ViewPasswordPage.dart';
+import 'package:storage_infomation/repository/KeyRepository.dart';
+import 'package:storage_infomation/repository/PasswordRepository.dart';
 
 import 'AddPasswordPage.dart';
 import 'MainDrawer.dart';
@@ -11,16 +14,17 @@ import 'SettingsPage.dart';
 class PasswordHomepage extends StatefulWidget {
   @override
   _PasswordHomepageState createState() => _PasswordHomepageState();
-  final keyRepository;
+  final keyRepository = GetIt.I.get<KeyRepository>();
   final passwordRepository;
 
-  PasswordHomepage({this.keyRepository, this.passwordRepository});
+  PasswordHomepage({this.passwordRepository});
 }
 
 class _PasswordHomepageState extends State<PasswordHomepage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  var passwords = List<Password>();
-  var passwordOnRam = List<Password>();
+  TextEditingController masterPassController = TextEditingController();
+  var passwords = List<Password1>();
+  var passwordOnRam = List<Password1>();
 
   int pickedIcon;
 
@@ -54,13 +58,18 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
 
   @override
   void initState() {
-    DBProvider.db.getAllPasswords().then((value) {
-      setState(() {
-        passwords.addAll(value);
-        passwordOnRam.addAll(value);
+    if (widget.passwordRepository == null) {
+      DBProvider.db.getAllPasswords().then((value) {
+        setState(() {
+          passwords.addAll(value);
+          passwordOnRam.addAll(value);
+        });
       });
-    });
-    super.initState();
+      super.initState();
+      _buildShowDialogBox(context);
+    } else {
+      super.initState();
+    }
   }
 
   @override
@@ -71,9 +80,12 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    Color primaryColor = Theme.of(context).primaryColor;
-
+    var size = MediaQuery
+        .of(context)
+        .size;
+    Color primaryColor = Theme
+        .of(context)
+        .primaryColor;
     return Scaffold(
       key: _scaffoldKey,
       drawer: new MainDrawer(),
@@ -109,7 +121,8 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (BuildContext context) => SettingsPage()));
+                                  builder: (BuildContext context) =>
+                                      SettingsPage()));
                         },
                       ),
                     ],
@@ -123,7 +136,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(20))),
+                BorderRadius.vertical(bottom: Radius.circular(20))),
             padding: EdgeInsets.all(10.0),
             child: Container(
               padding: EdgeInsets.all(5),
@@ -155,11 +168,11 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
           ),
           Expanded(
               child: ListView.builder(
-            itemCount: passwords.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _listPassword(index);
-            },
-          )),
+                itemCount: passwords.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return _listPassword(index);
+                },
+              )),
         ],
       ),
       floatingActionButton: Container(
@@ -182,7 +195,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
   }
 
   _listPassword(index) {
-    Password password = passwords[index];
+    Password1 password = passwords[index];
     int i = 0;
     i = iconNames.indexOf(password.icon);
     Color color = hexToColor(password.color);
@@ -212,7 +225,8 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (BuildContext context) => ViewPassword(password: password)));
+                  builder: (BuildContext context) =>
+                      ViewPassword(password: password)));
         },
         child: ListTile(
           title: Text(
@@ -227,17 +241,17 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
               child: CircleAvatar(backgroundColor: color, child: icons[i])),
           subtitle: password.userName != ""
               ? Text(
-                  password.userName,
-                  style: TextStyle(
-                    fontFamily: 'Subtitle',
-                  ),
-                )
+            password.userName,
+            style: TextStyle(
+              fontFamily: 'Subtitle',
+            ),
+          )
               : Text(
-                  "No username specified",
-                  style: TextStyle(
-                    fontFamily: 'Subtitle',
-                  ),
-                ),
+            "No username specified",
+            style: TextStyle(
+              fontFamily: 'Subtitle',
+            ),
+          ),
         ),
       ),
     );
@@ -245,5 +259,61 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
 
   Color hexToColor(String code) {
     return new Color(int.parse(code.substring(1, 9), radix: 16) + 0xFF000000);
+  }
+
+  _buildShowDialogBox(BuildContext context) async {
+    await Future.delayed(Duration(milliseconds: 30));
+    showDialog(
+      context: context,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            title: Text("Enter Master Password"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  "To decrypt the password enter your master password:",
+                  style: TextStyle(fontFamily: 'Subtitle'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    obscureText: true,
+                    maxLength: 32,
+                    decoration: InputDecoration(
+                        hintText: "Master Pass",
+                        hintStyle: TextStyle(fontFamily: "Subtitle"),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16))),
+                    controller: masterPassController,
+                  ),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () async {
+                  PasswordHomepage passHomePage;
+                  try {
+                    final keyPair = await widget.keyRepository.retrievePasswordEncryptedKeys(masterPassController.text);
+                    final _passwordRepository = GetIt.I.get<PasswordRepository>();
+                    (_passwordRepository as RsaPasswordRepository).setKeys(keyPair);
+                    passHomePage = new PasswordHomepage(passwordRepository: _passwordRepository);
+                  } catch(e) {
+                    passHomePage = new PasswordHomepage();
+                  } finally {
+                    masterPassController.clear();
+                    Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => passHomePage));
+                  }
+                },
+                child: Text("DONE"),
+              )
+            ],
+          )
+        );
+      },
+    );
   }
 }

@@ -38,7 +38,7 @@ class DBProvider {
     });
   }
 
-  newPassword(Password password) async {
+  newPassword(Password1 password) async {
     final db = await database;
     var res = await db.insert("Passwords",password.toJson());
     return res;
@@ -47,24 +47,24 @@ class DBProvider {
   getPasswordByAppName(String  appName) async {
     final db = await database;
     var res = await db.query("Passwords", where: "app_name LIKE %?%", whereArgs: [appName]);
-    return res.isNotEmpty ? res.map((c) => Password.fromJson(c)).toList() : [];
+    return res.isNotEmpty ? res.map((c) => Password1.fromJson(c)).toList() : [];
   }
 
   getPassword(int id) async {
     final db = await database;
     var res = await db.query("Passwords", where: "id = ?", whereArgs: [id]);
-    return res.isNotEmpty ? Password.fromJson(res.first) : Null;
+    return res.isNotEmpty ? Password1.fromJson(res.first) : Null;
   }
 
   getAllPasswords() async {
     final db = await database;
     var res = await db.query("Passwords");
-    List<Password> list =
-        res.isNotEmpty ? res.map((c) => Password.fromJson(c)).toList() : [];
+    List<Password1> list =
+        res.isNotEmpty ? res.map((c) => Password1.fromJson(c)).toList() : [];
     return list;
   }
 
-  updatePassword(Password newClient) async {
+  updatePassword(Password1 newClient) async {
     final db = await database;
     var res = await db.update("Passwords", newClient.toJson(),
         where: "id = ?", whereArgs: [newClient.id]);

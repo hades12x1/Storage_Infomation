@@ -8,7 +8,7 @@ class PasswordBloc {
     getPasswords();
   }
 
-  final _passwordController = StreamController<List<Password>>.broadcast();
+  final _passwordController = StreamController<List<Password1>>.broadcast();
 
   get passwords => _passwordController.stream;
 
@@ -24,12 +24,12 @@ class PasswordBloc {
     return await DBProvider.db.getPasswordByAppName(appName);
   }
 
-  add(Password password) {
+  add(Password1 password) {
     DBProvider.db.newPassword(password);
     getPasswords();
   }
 
-  update(Password password) {
+  update(Password1 password) {
     DBProvider.db.updatePassword(password);
     getPasswords();
   }

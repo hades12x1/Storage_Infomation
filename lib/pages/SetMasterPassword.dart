@@ -117,7 +117,7 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
                           context,
                           new MaterialPageRoute(
                               builder: (BuildContext context) =>
-                              new PasswordHomepage(keyRepository: _keyRepository, passwordRepository: _passwordRepository)
+                              new PasswordHomepage(passwordRepository: _passwordRepository,)
                           )
                       );
                     } else {

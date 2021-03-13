@@ -371,7 +371,7 @@ class _AddPasswordState extends State<AddPassword> {
             onPressed: () {
               if (_formKey.currentState.validate()) {
                 encryptPass(passwordController.text);
-                Password password = new Password(
+                Password1 password = new Password1(
                     appName: appNameController.text,
                     password: encryptedString,
                     color: "#" + pickedColor.value.toRadixString(16),

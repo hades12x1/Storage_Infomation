@@ -1,16 +1,16 @@
 import 'dart:convert';
 
-Password passwordFromJson(String str) {
+Password1 passwordFromJson(String str) {
   final jsonData = json.decode(str);
-  return Password.fromJson(jsonData);
+  return Password1.fromJson(jsonData);
 }
 
-String clientToJson(Password data) {
+String clientToJson(Password1 data) {
   final dyn = data.toJson();
   return json.encode(dyn);
 }
 
-class Password {
+class Password1 {
   int id;
   String userName;
   String appName;
@@ -20,9 +20,9 @@ class Password {
   String icon;
   String color;
 
-  Password({this.id, this.icon,this.color, this.userName, this.appName, this.password, this.url, this.note});
+  Password1({this.id, this.icon,this.color, this.userName, this.appName, this.password, this.url, this.note});
 
-  Password.fromJson(Map<String, dynamic> json) {
+  Password1.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     appName = json['app_name'];
     password = json['password'];
