@@ -11,10 +11,10 @@ import 'SettingsPage.dart';
 class PasswordHomepage extends StatefulWidget {
   @override
   _PasswordHomepageState createState() => _PasswordHomepageState();
+  final keyRepository;
+  final passwordRepository;
 
-  Brightness brigntness = Brightness.light;
-
-  PasswordHomepage({this.brigntness});
+  PasswordHomepage({this.keyRepository, this.passwordRepository});
 }
 
 class _PasswordHomepageState extends State<PasswordHomepage> {
