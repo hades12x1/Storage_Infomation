@@ -12,11 +12,10 @@ class Password {
   final String note;
   final String userName;
   final String password;
-  final String plainText;
 
   Password({
-    this.id, this.appName, this.icon, this.color, this.url,
-    this.note, this.userName, this.password, this.plainText
+    this.id, this.appName, this.icon, this.color,
+    this.url, this.note, this.userName, this.password
   });
 
   Password.fromDataClass(db.Password dbPassword):
@@ -27,8 +26,7 @@ class Password {
         url = dbPassword.url,
         note = dbPassword.note,
         userName = dbPassword.userName,
-        password = dbPassword.password,
-        plainText = null;
+        password = dbPassword.password;
 
   Password copy({
     int id,
@@ -39,7 +37,6 @@ class Password {
     String note,
     String userName,
     String password,
-    String plainText,
   }) => Password(
     id: id ?? this.id,
     appName: appName ?? this.appName,
@@ -48,8 +45,7 @@ class Password {
     url: url ?? this.url,
     note: note ?? this.note,
     userName: userName ?? this.userName,
-    password: password ?? this.password,
-    plainText: plainText ?? this.plainText,
+    password: password ?? this.password
   );
 }
 
@@ -88,7 +84,7 @@ class RsaPasswordRepository extends PasswordRepository {
   @override
   Future<List<Password>> retrievePasswords() async {
     return (await _db.allPasswords).map((e) {
-      return Password.fromDataClass(e).copy(plainText: _encrypter.decrypt64(e.password));
+      return Password.fromDataClass(e).copy(password: _encrypter.decrypt64(e.password));
     }).toList();
   }
 
@@ -96,13 +92,13 @@ class RsaPasswordRepository extends PasswordRepository {
   Stream<List<Password>> watchPasswords() =>
       _db.watchAllPasswords.map((dbPasswords) =>
           dbPasswords.map((dbP) =>
-              Password.fromDataClass(dbP).copy(plainText: _encrypter.decrypt64(dbP.password))
+              Password.fromDataClass(dbP).copy(password: _encrypter.decrypt64(dbP.password))
           ).toList()
       );
 
   @override
   Future<Password> addEntry(Password password) async {
-    Encrypted encrypted = _encrypter.encrypt(password.plainText);
+    Encrypted encrypted = _encrypter.encrypt(password.password);
     Password encryptedPassword = password.copy(password: encrypted.base64);
     final id = await _db.addPassword(db.PasswordsCompanion(
       appName: Value(encryptedPassword.appName),
@@ -121,7 +117,7 @@ class RsaPasswordRepository extends PasswordRepository {
 
   @override
   Future<Password> updatePassword(Password password) async {
-    final encrypted = _encrypter.encrypt(password.plainText);
+    final encrypted = _encrypter.encrypt(password.password);
     final encryptedPassword = password.copy(password: encrypted.base64);
     await _db.updatePassword(db.PasswordsCompanion(
       id: Value(encryptedPassword.id),

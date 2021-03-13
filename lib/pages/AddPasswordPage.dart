@@ -6,16 +6,15 @@ import 'package:get_it/get_it.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:password_strength/password_strength.dart';
-import 'package:storage_infomation/database/Database.dart';
-import 'package:storage_infomation/model/PasswordModel.dart';
 import 'package:storage_infomation/repository/KeyRepository.dart';
+import 'package:storage_infomation/repository/PasswordRepository.dart';
 
 import '../random_string.dart';
 import 'PasswordHomepage.dart';
 
 class AddPassword extends StatefulWidget {
   final keyRepository = GetIt.I.get<KeyRepository>();
-  final passwordRepo;
+  final RsaPasswordRepository passwordRepo;
 
   AddPassword({Key key, this.passwordRepo}) : super(key: key);
 
@@ -251,25 +250,25 @@ class _AddPasswordState extends State<AddPassword> {
                         FlatButton(
                           onPressed: () {
                             //Create a password with letters, uppercase letters, numbers but not special chars with 17 chars
-                            String pass = generatePassword(true, true, true, true, 15);
+                            String pass =
+                                generatePassword(true, true, true, true, 15);
                             passwordController.text = pass;
                             checkPassStrength(pass);
                           },
                           child: Text('Generate'),
                         ),
                         FlatButton(
-                          onPressed: () {
-                            setState(() {
-                              obscureText = !obscureText;
-                              if (obscureText) {
-                                showHide = 'Show Password';
-                              } else {
-                                showHide = 'Hide Password';
-                              }
-                            });
-                          },
-                          child: Text(showHide)
-                        ),
+                            onPressed: () {
+                              setState(() {
+                                obscureText = !obscureText;
+                                if (obscureText) {
+                                  showHide = 'Show Password';
+                                } else {
+                                  showHide = 'Hide Password';
+                                }
+                              });
+                            },
+                            child: Text(showHide)),
                         FlatButton(
                           onPressed: () {
                             Clipboard.setData(new ClipboardData(
@@ -287,12 +286,16 @@ class _AddPasswordState extends State<AddPassword> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
                         height: 10,
-                        width: passwordStrength == 0 ? 5 : MediaQuery.of(context).size.width * passwordStrength,
+                        width: passwordStrength == 0
+                            ? 5
+                            : MediaQuery.of(context).size.width *
+                                passwordStrength,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: passwordStrengthBarColor,
@@ -338,7 +341,10 @@ class _AddPasswordState extends State<AddPassword> {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             "Pick a Color",
-                            style: TextStyle(fontFamily: 'Title', fontSize: 20, color: primaryColor),
+                            style: TextStyle(
+                                fontFamily: 'Title',
+                                fontSize: 20,
+                                color: primaryColor),
                           ),
                         ),
                         InkWell(
@@ -346,7 +352,8 @@ class _AddPasswordState extends State<AddPassword> {
                             _openColorPicker();
                           },
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8.0, top: 8.0),
                             child: Material(
                                 shape: CircleBorder(),
                                 elevation: 2.0,
@@ -375,24 +382,21 @@ class _AddPasswordState extends State<AddPassword> {
             icon: Icon(Icons.add),
             onPressed: () {
               if (_formKey.currentState.validate()) {
-                encryptPass(passwordController.text);
-                Password1 password = new Password1(
+                Password password = new Password(
                     appName: appNameController.text,
-                    password: encryptedString,
+                    password: passwordController.text,
                     color: "#" + pickedColor.value.toRadixString(16),
                     icon: iconNames[pickedIcon],
                     userName: userNameController.text,
                     url: urlController.text,
-                    note: noteController.text
-                );
-                DBProvider.db.newPassword(password);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                        new PasswordHomepage(passwordRepository: widget.passwordRepo)
-                    )
-                );
+                    note: noteController.text);
+                widget.passwordRepo.addEntry(password).then((value) => {
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                          new PasswordHomepage(passwordRepository: widget.passwordRepo)))
+                });
               } else {
                 // print(Theme.of(context).accentColor);
               }
@@ -436,22 +440,5 @@ class _AddPasswordState extends State<AddPassword> {
         );
       },
     );
-  }
-
-  encryptPass(String text) {
-    keyString = masterPassString;
-    if (keyString.length < 32) {
-      int count = 32 - keyString.length;
-      for (var i = 0; i < count; i++) {
-        keyString += ".";
-      }
-    }
-    final key = encrypt.Key.fromUtf8(keyString);
-    final plainText = text;
-    final iv = encrypt.IV.fromLength(16);
-
-    final encrypter = encrypt.Encrypter(encrypt.AES(key));
-    final e = encrypter.encrypt(plainText, iv: iv);
-    encryptedString = e.base64.toString();
   }
 }

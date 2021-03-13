@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:storage_infomation/bloc/PasswordBloc.dart';
-import 'package:storage_infomation/database/Database.dart';
-import 'package:storage_infomation/model/PasswordModel.dart';
 import 'package:storage_infomation/pages/ViewPasswordPage.dart';
 import 'package:storage_infomation/repository/KeyRepository.dart';
 import 'package:storage_infomation/repository/PasswordRepository.dart';
@@ -15,7 +12,7 @@ class PasswordHomepage extends StatefulWidget {
   @override
   _PasswordHomepageState createState() => _PasswordHomepageState();
   final keyRepository = GetIt.I.get<KeyRepository>();
-  final passwordRepository;
+  final PasswordRepository passwordRepository;
 
   PasswordHomepage({this.passwordRepository});
 }
@@ -23,8 +20,8 @@ class PasswordHomepage extends StatefulWidget {
 class _PasswordHomepageState extends State<PasswordHomepage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   TextEditingController masterPassController = TextEditingController();
-  var passwords = List<Password1>();
-  var passwordOnRam = List<Password1>();
+  var passwords = List<Password>();
+  var passwordOnRam = List<Password>();
 
   int pickedIcon;
 
@@ -54,8 +51,6 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
     "Icon 10",
   ];
 
-  final bloc = PasswordBloc();
-
   @override
   void initState() {
     if (widget.passwordRepository == null) {
@@ -64,7 +59,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
     } else {
       super.initState();
     }
-    DBProvider.db.getAllPasswords().then((value) {
+    widget.passwordRepository.retrievePasswords().then((value) {
       setState(() {
         passwords.addAll(value);
         passwordOnRam.addAll(value);
@@ -74,7 +69,6 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
 
   @override
   void dispose() {
-    bloc.dispose();
     super.dispose();
   }
 
@@ -145,7 +139,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                     text = text.toLowerCase();
                     setState(() {
                       if (text.isEmpty) {
-                        DBProvider.db.getAllPasswords().then((value) {
+                        widget.passwordRepository.retrievePasswords().then((value) {
                           passwords.addAll(value);
                         });
                       } else {
@@ -186,7 +180,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
   }
 
   _listPassword(index) {
-    Password1 password = passwords[index];
+    Password password = passwords[index];
     int i = 0;
     i = iconNames.indexOf(password.icon);
     Color color = hexToColor(password.color);
@@ -195,7 +189,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
       onDismissed: (direction) {
         var item = password;
         //To delete
-        DBProvider.db.deletePassword(item.id);
+        widget.passwordRepository.removePassword(item);
         setState(() {
           passwords.removeAt(index);
         });
@@ -205,7 +199,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
             action: SnackBarAction(
                 label: "UNDO",
                 onPressed: () {
-                  DBProvider.db.newPassword(item);
+                  widget.passwordRepository.addEntry(item);
                   setState(() {
                     passwords.insert(index, item);
                   });
@@ -216,9 +210,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
         onTap: () {
           Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      ViewPassword(password: password)));
+              MaterialPageRoute(builder: (BuildContext context) => ViewPassword(password: password)));
         },
         child: ListTile(
           title: Text(

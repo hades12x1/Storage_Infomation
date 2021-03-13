@@ -3,10 +3,10 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:storage_infomation/model/PasswordModel.dart';
+import 'package:storage_infomation/repository/PasswordRepository.dart';
 
 class ViewPassword extends StatefulWidget {
-  final Password1 password;
+  final Password password;
 
   const ViewPassword({Key key, this.password}) : super(key: key);
 
@@ -15,7 +15,7 @@ class ViewPassword extends StatefulWidget {
 }
 
 class _ViewPasswordState extends State<ViewPassword> {
-  final Password1 password;
+  final Password password;
   var sizeIcon = 0.28;
 
   _ViewPasswordState(this.password);
