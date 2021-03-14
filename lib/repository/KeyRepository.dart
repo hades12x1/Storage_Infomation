@@ -15,7 +15,6 @@ abstract class KeyRepository {
   Future<AsymmetricKeyPair> retrieveBiometricEncryptedKeys();
 
   Future<void> clearKeys();
-
 }
 
 class RsaKeysRepository extends KeyRepository {
@@ -23,10 +22,10 @@ class RsaKeysRepository extends KeyRepository {
       "eBP5ILffDTbkrXZ5+zb/5ZVCOo+0/Weo1bJfLQDHa72CY8XV1mAQytHHLDomtPw4p7RIIh8GTgMIA=";
   static const _encryptedPublicKeyPrefsKey = "encrypted_public_key";
   static const _encryptedPrivateKeyPrefsKey = "encrypted_private_key";
-  
+
   static const _biometricFileName = "FwgZQLaodB";
   static const _biometricKeysJoinPattern = "\n";
-  
+
   static const _beginPublicKey = "-----BEGIN PUBLIC KEY-----";
   static const _endPublicKey = "-----END PUBLIC KEY-----";
   static const _beginPrivateKey = "-----BEGIN PRIVATE KEY-----";
@@ -77,7 +76,7 @@ class RsaKeysRepository extends KeyRepository {
     final privateKeyPem = _rsaHelper.encodePrivateKeyToPemPKCS1(keyPair.privateKey);
     return (await _storage.getStorage(
         _biometricFileName,
-        androidPromptInfo: AndroidPromptInfo(title: "Authenticate to prepare secure storage"),
+        androidPromptInfo: AndroidPromptInfo(title: "Setup biometric for secure storage"),
     )).write(publicKeyPem + _biometricKeysJoinPattern + privateKeyPem);
   }
 
@@ -108,5 +107,4 @@ class RsaKeysRepository extends KeyRepository {
     await prefs.setString(_encryptedPublicKeyPrefsKey, null);
     await prefs.setString(_encryptedPrivateKeyPrefsKey, null);
   }
-
 }

@@ -38,7 +38,7 @@ dependencies:
 
   flutter_bloc: ^6.0.2
   get_it: ^4.0.4
-  biometric_storage: ^1.0.1+4
+  biometric_storage: ^1.0.1+5
   loading_overlay: ^0.2.1
   moor: ^3.3.1
   sqlite3_flutter_libs:

@@ -21,6 +21,11 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
     if (_passwordRepository is RsaPasswordRepository) {
       (_passwordRepository as RsaPasswordRepository).setKeys(keyPair);
     }
+    try {
+      await _keyRepository.storeBiometricEncryptedKeys(keyPair);
+    } catch(e) {
+      print('Device not suport authentication biometric!!!');
+    }
   }
 
   @override
