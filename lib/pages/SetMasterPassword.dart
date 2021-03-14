@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:storage_infomation/pages/PasswordHomepage.dart';
 import 'package:storage_infomation/repository/KeyRepository.dart';
 import 'package:storage_infomation/repository/PasswordRepository.dart';
@@ -16,12 +14,6 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
   final _keyRepository = GetIt.I.get<KeyRepository>();
   final _passwordRepository = GetIt.I.get<PasswordRepository>();
 
-  Future<Null> getMasterPass() async {
-    final storage = new FlutterSecureStorage();
-    String masterPass = await storage.read(key: 'master') ?? '';
-    masterPassController.text = masterPass;
-  }
-
   saveMasterPass(String password) async {
     // Todo validate password empty
     final keyPair = await _keyRepository.generateKeys();
@@ -31,25 +23,9 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
     }
   }
 
-  authenticate() async {
-    var localAuth = LocalAuthentication();
-    bool didAuthenticate = await localAuth.authenticateWithBiometrics(
-        localizedReason: 'Please authenticate to change master password',
-        stickyAuth: true);
-
-    if (didAuthenticate) {
-      Navigator.of(context).push(new MaterialPageRoute(
-          builder: (BuildContext context) => new PasswordHomepage()));
-      return;
-    }
-    print("Authentication with fingerprint fail!");
-  }
-
   @override
   void initState() {
     super.initState();
-    authenticate();
-    getMasterPass();
   }
 
   @override
