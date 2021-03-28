@@ -27,6 +27,8 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
       await _keyRepository.storeBiometricEncryptedKeys(keyPair);
     } catch(e) {
       print('Device not suport authentication biometric!!!');
+    } finally {
+      await _storage.write(key: 'setPassword', value: "setup_success");
     }
   }
 
@@ -94,7 +96,6 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
                   ),
                   onPressed: () async {
                     if (masterPassController.text.isNotEmpty) {
-                      await _storage.write(key: 'setPassword', value: "setup_success");
                       await _saveMasterPass(masterPassController.text.trim());
                       Navigator.push(
                           context,

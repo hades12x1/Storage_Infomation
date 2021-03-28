@@ -26,10 +26,10 @@ class RsaKeysRepository extends KeyRepository {
   static const _biometricFileName = "FwgZQLaodB";
   static const _biometricKeysJoinPattern = "\n";
 
-  static const _beginPublicKey = "-----BEGIN PUBLIC KEY-----";
-  static const _endPublicKey = "-----END PUBLIC KEY-----";
-  static const _beginPrivateKey = "-----BEGIN PRIVATE KEY-----";
-  static const _endPrivateKey = "-----END PRIVATE KEY-----";
+  static const _beginPublicKey = "-----BEGIN RSA PUBLIC KEY-----";
+  static const _endPublicKey = "-----END RSA PUBLIC KEY-----";
+  static const _beginPrivateKey = "-----BEGIN RSA PRIVATE KEY-----";
+  static const _endPrivateKey = "-----END RSA PRIVATE KEY-----";
 
   final _rsaHelper = RsaKeyHelper();
   final _cryptor = new PlatformStringCryptor();
@@ -83,7 +83,6 @@ class RsaKeysRepository extends KeyRepository {
   @override
   Future<AsymmetricKeyPair> retrieveBiometricEncryptedKeys() async {
     final storedKeys = (await (await _storage.getStorage(_biometricFileName)).read());
-
     final publicKeyStartIndex = storedKeys.indexOf(_beginPublicKey);
     final publicKeyEndIndex = storedKeys.indexOf(_endPublicKey) + _endPublicKey.length;
 

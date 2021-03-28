@@ -55,7 +55,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
   void initState() {
     if (widget.passwordRepo == null) {
       super.initState();
-      _buildShowDialogBox(context);
+      _buildShowLogin(context);
     } else {
       super.initState();
       widget.passwordRepo.retrievePasswords().then((value) {
@@ -108,10 +108,12 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                           color: primaryColor,
                         ),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  SettingsPage(passwordRepo: widget.passwordRepo))
-                          );
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      SettingsPage(
+                                          passwordRepo: widget.passwordRepo)));
                         },
                       ),
                     ],
@@ -125,7 +127,7 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius:
-                BorderRadius.vertical(bottom: Radius.circular(20))),
+                    BorderRadius.vertical(bottom: Radius.circular(20))),
             padding: EdgeInsets.all(10.0),
             child: Container(
               padding: EdgeInsets.all(5),
@@ -157,11 +159,11 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
           ),
           Expanded(
               child: ListView.builder(
-                itemCount: passwords.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return _listPassword(index);
-                },
-              )),
+            itemCount: passwords.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _listPassword(index);
+            },
+          )),
         ],
       ),
       floatingActionButton: Container(
@@ -174,7 +176,9 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
             onPressed: () async {
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (BuildContext context) => AddPassword(passwordRepo: widget.passwordRepo)));
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          AddPassword(passwordRepo: widget.passwordRepo)));
             },
           ),
         ),
@@ -206,14 +210,17 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
                   setState(() {
                     passwords.insert(index, item);
                   });
-                }))
-        );
+                })));
       },
       child: InkWell(
         onTap: () {
           Navigator.push(
               context,
-              MaterialPageRoute(builder: (BuildContext context) => ViewPassword(password: password, passwordRepo: widget.passwordRepo,)));
+              MaterialPageRoute(
+                  builder: (BuildContext context) => ViewPassword(
+                        password: password,
+                        passwordRepo: widget.passwordRepo,
+                      )));
         },
         child: ListTile(
           title: Text(
@@ -228,17 +235,17 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
               child: CircleAvatar(backgroundColor: color, child: icons[i])),
           subtitle: password.userName != ""
               ? Text(
-            password.userName,
-            style: TextStyle(
-              fontFamily: 'Subtitle',
-            ),
-          )
+                  password.userName,
+                  style: TextStyle(
+                    fontFamily: 'Subtitle',
+                  ),
+                )
               : Text(
-            "No username specified",
-            style: TextStyle(
-              fontFamily: 'Subtitle',
-            ),
-          ),
+                  "No username specified",
+                  style: TextStyle(
+                    fontFamily: 'Subtitle',
+                  ),
+                ),
         ),
       ),
     );
@@ -249,58 +256,82 @@ class _PasswordHomepageState extends State<PasswordHomepage> {
   }
 
   _buildShowDialogBox(BuildContext context) async {
-    await Future.delayed(Duration(milliseconds: 30));
     showDialog(
       context: context,
       builder: (context) {
         return WillPopScope(
-          onWillPop: () async => false,
-          child: AlertDialog(
-            title: Text("Enter Master Password"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  "To decrypt the password enter your master password:",
-                  style: TextStyle(fontFamily: 'Subtitle'),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    obscureText: true,
-                    maxLength: 32,
-                    decoration: InputDecoration(
-                        hintText: "Master Pass",
-                        hintStyle: TextStyle(fontFamily: "Subtitle"),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16))),
-                    controller: masterPassController,
+            onWillPop: () async => false,
+            child: AlertDialog(
+              title: Text("Enter Master Password"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    "To decrypt the password enter your master password:",
+                    style: TextStyle(fontFamily: 'Subtitle'),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      obscureText: true,
+                      maxLength: 32,
+                      decoration: InputDecoration(
+                          hintText: "Master Pass",
+                          hintStyle: TextStyle(fontFamily: "Subtitle"),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16))),
+                      controller: masterPassController,
+                    ),
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () async {
+                    PasswordHomepage passHomePage;
+                    try {
+                      final keyPair = await widget.keyRepository
+                          .retrievePasswordEncryptedKeys(
+                              masterPassController.text);
+                      final _passwordRepository =
+                          GetIt.I.get<PasswordRepository>();
+                      (_passwordRepository as RsaPasswordRepository)
+                          .setKeys(keyPair);
+                      passHomePage = new PasswordHomepage(
+                          passwordRepo: _passwordRepository);
+                    } catch (e) {
+                      passHomePage = new PasswordHomepage();
+                    } finally {
+                      masterPassController.clear();
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (BuildContext context) => passHomePage));
+                    }
+                  },
+                  child: Text("DONE"),
+                )
               ],
-            ),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () async {
-                  PasswordHomepage passHomePage;
-                  try {
-                    final keyPair = await widget.keyRepository.retrievePasswordEncryptedKeys(masterPassController.text);
-                    final _passwordRepository = GetIt.I.get<PasswordRepository>();
-                    (_passwordRepository as RsaPasswordRepository).setKeys(keyPair);
-                    passHomePage = new PasswordHomepage(passwordRepo: _passwordRepository);
-                  } catch(e) {
-                    passHomePage = new PasswordHomepage();
-                  } finally {
-                    masterPassController.clear();
-                    Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => passHomePage));
-                  }
-                },
-                child: Text("DONE"),
-              )
-            ],
-          )
-        );
+            ));
       },
     );
+  }
+
+  _buildShowLogin(BuildContext context) async {
+    await Future.delayed(Duration(milliseconds: 30));
+    try {
+      final keyPair =
+          await widget.keyRepository.retrieveBiometricEncryptedKeys();
+      final _passwordRepository = GetIt.I.get<PasswordRepository>();
+      (_passwordRepository as RsaPasswordRepository).setKeys(keyPair);
+      PasswordHomepage passHomePage =
+          new PasswordHomepage(passwordRepo: _passwordRepository);
+      Navigator.push(
+          context,
+          new MaterialPageRoute(
+              builder: (BuildContext context) => passHomePage));
+    } catch (ex) {
+      _buildShowDialogBox(context);
+    }
   }
 }
