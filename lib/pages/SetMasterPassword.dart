@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storage_infomation/pages/PasswordHomepage.dart';
 import 'package:storage_infomation/repository/KeyRepository.dart';
@@ -13,8 +14,9 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
   TextEditingController masterPassController = TextEditingController();
   final _keyRepository = GetIt.I.get<KeyRepository>();
   final _passwordRepository = GetIt.I.get<PasswordRepository>();
+  final _storage = new FlutterSecureStorage();
 
-  saveMasterPass(String password) async {
+  _saveMasterPass(String password) async {
     // Todo validate password empty
     final keyPair = await _keyRepository.generateKeys();
     await _keyRepository.storePasswordEncryptedKeys(password, keyPair);
@@ -92,7 +94,8 @@ class _SetMasterPasswordState extends State<SetMasterPassword> {
                   ),
                   onPressed: () async {
                     if (masterPassController.text.isNotEmpty) {
-                      saveMasterPass(masterPassController.text.trim());
+                      await _storage.write(key: 'setPassword', value: "setup_success");
+                      await _saveMasterPass(masterPassController.text.trim());
                       Navigator.push(
                           context,
                           new MaterialPageRoute(

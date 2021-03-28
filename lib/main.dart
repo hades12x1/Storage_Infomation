@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:storage_infomation/pages/GreetingsPage.dart';
 import 'package:storage_infomation/pages/PasswordHomepage.dart';
@@ -20,25 +19,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int launch = 0;
+  String setPassword = "";
   bool loading = true;
   Color primaryColor = Color(0xff5153FF);
 
   Future checkFirstSeen() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    launch = prefs.getInt("launch") ?? 0;
-
     final storage = new FlutterSecureStorage();
-    String masterPass = await storage.read(key: 'master') ?? '';
-
-    if (prefs.getInt('primaryColor') == null) {
-      await prefs.setInt('primaryColor', 0);
-    }
-
-    if (launch == 0 && masterPass == '') {
-      await prefs.setInt('launch', launch + 1);
-      await prefs.setInt('primaryColor', 0);
-    }
+    setPassword = await storage.read(key: 'setPassword') ?? '';
 
     setState(() {
       loading = false;
@@ -67,7 +54,7 @@ class _MyAppState extends State<MyApp> {
         theme: theme,
         home: loading
             ? Center(child: CircularProgressIndicator())
-            : launch == 0 ? GreetingsPage() : PasswordHomepage(),
+            : setPassword == "setup_success" ? PasswordHomepage() : GreetingsPage(),
       ),
     );
   }
