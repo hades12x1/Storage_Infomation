@@ -317,7 +317,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                       height: 50,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      color: Colors.lightBlueAccent,
+                      color: Colors.greenAccent,
                       child: Text(
                         "Update account",
                         style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
@@ -329,7 +329,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                       height: 50,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      color: Colors.redAccent,
+                      color: Color(0xff5153FF),
                       child: Text(
                         "Delete account",
                         style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
