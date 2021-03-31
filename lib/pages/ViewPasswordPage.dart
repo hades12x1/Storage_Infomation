@@ -192,16 +192,16 @@ class _ViewPasswordState extends State<ViewPassword> {
                     ),
                     IconButton(
                       onPressed: () async {
-                          setState(() {
-                            decrypt = !decrypt;
-                          });
+                        setState(() {
+                          decrypt = !decrypt;
+                        });
                       },
                       icon: decrypt ? Icon(Icons.lock_open) : Icon(Icons.lock),
                     ),
                     IconButton(
                       icon: decrypt ? Icon(Icons.copy) : Icon(Icons.data_usage),
                       onPressed: () async {
-                        if(decrypt) {
+                        if (decrypt) {
                           Clipboard.setData(new ClipboardData(text: decrypted));
                           scaffoldKey.currentState.showSnackBar(
                             SnackBar(
@@ -284,21 +284,22 @@ class _ViewPasswordState extends State<ViewPassword> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              password.url,
+                              password.note,
                               style: TextStyle(
                                 fontFamily: 'Subtitle',
-                                fontSize: 20,
-                                // color: Colors.black54
+                                fontSize: 20
                               ),
                             ),
                           ),
                         ),
+                        SizedBox(height: 35),
                       ],
                     ),
                     IconButton(
                       icon: Icon(Icons.copy),
                       onPressed: () async {
-                        Clipboard.setData(new ClipboardData(text: password.note));
+                        Clipboard.setData(
+                            new ClipboardData(text: password.note));
                         scaffoldKey.currentState.showSnackBar(
                           SnackBar(
                             content: Text("Copied Note to Clipboard!"),
@@ -309,6 +310,35 @@ class _ViewPasswordState extends State<ViewPassword> {
                     )
                   ],
                 ),
+                Row(
+                  children: <Widget>[
+                    SizedBox(width: 10),
+                    MaterialButton(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      height: 50,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      color: Colors.lightBlueAccent,
+                      child: Text(
+                        "Update account",
+                        style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
+                      ),
+                      onPressed: () => null,
+                    ),
+                    SizedBox(width: 15),
+                    MaterialButton(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      height: 50,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      color: Colors.redAccent,
+                      child: Text(
+                        "Delete account",
+                        style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
+                      ),
+                      onPressed: () => null,
+                    ),
+                    SizedBox(width: 10),
+                  ],
+                )
               ],
             ),
           ),

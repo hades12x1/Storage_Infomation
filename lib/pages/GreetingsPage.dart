@@ -54,12 +54,7 @@ class _GreetingsPageState extends State<GreetingsPage> {
                 child: Text(
                     "(You can change it afterwards)",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontFamily: "Subtitle",
-                        fontSize: 18,
-                        // color: Colors.black54
-                        ),
-                        ),
+                    style: TextStyle(fontFamily: "Subtitle", fontSize: 18)),
               ),SizedBox(
                 height: 20,
               ),
