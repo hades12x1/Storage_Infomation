@@ -44,6 +44,8 @@ dependencies:
   sqlite3_flutter_libs:
   path:
 
+  rflutter_alert:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

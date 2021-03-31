@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:storage_infomation/repository/KeyRepository.dart';
 import 'package:storage_infomation/repository/PasswordRepository.dart';
+
+import 'PasswordHomepage.dart';
 
 class ViewPassword extends StatefulWidget {
   final keyRepo = GetIt.I.get<KeyRepository>();
@@ -13,14 +15,15 @@ class ViewPassword extends StatefulWidget {
   ViewPassword({Key key, this.password, this.passwordRepo}) : super(key: key);
 
   @override
-  _ViewPasswordState createState() => _ViewPasswordState(password);
+  _ViewPasswordState createState() => _ViewPasswordState(password, passwordRepo);
 }
 
 class _ViewPasswordState extends State<ViewPassword> {
-  final Password password;
+  final Password _password;
+  final PasswordRepository _passwordRepo;
   var sizeIcon = 0.28;
 
-  _ViewPasswordState(this.password);
+  _ViewPasswordState(this._password, this._passwordRepo);
 
   TextEditingController masterPassController = TextEditingController();
 
@@ -60,17 +63,10 @@ class _ViewPasswordState extends State<ViewPassword> {
     return new Color(int.parse(code.substring(1, 9), radix: 16) + 0xFF000000);
   }
 
-  Future<String> getMasterPass() async {
-    final storage = new FlutterSecureStorage();
-    String masterPass = await storage.read(key: 'master') ?? '';
-    return masterPass;
-  }
-
   @override
   void initState() {
-    print(password.color);
-    color = hexToColor(password.color);
-    index = iconNames.indexOf(password.icon);
+    color = hexToColor(_password.color);
+    index = iconNames.indexOf(_password.icon);
     super.initState();
   }
 
@@ -103,7 +99,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                     SizedBox(
                       height: 12,
                     ),
-                    Text(password.appName,
+                    Text(_password.appName,
                         style: TextStyle(
                             fontFamily: "Title",
                             fontSize: 32,
@@ -136,7 +132,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              password.userName,
+                              _password.userName,
                               style: TextStyle(
                                 fontFamily: 'Subtitle',
                                 fontSize: 20,
@@ -150,7 +146,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                     IconButton(
                       icon: Icon(Icons.copy),
                       onPressed: () async {
-                        Clipboard.setData(new ClipboardData(text: password.userName));
+                        Clipboard.setData(new ClipboardData(text: _password.userName));
                         scaffoldKey.currentState.showSnackBar(
                           SnackBar(
                             content: Text("Copied Username to Clipboard!"),
@@ -180,7 +176,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              decrypt ? password.password : decrypted,
+                              decrypt ? _password.password : decrypted,
                               style: TextStyle(
                                 fontFamily: 'Subtitle',
                                 fontSize: 20,
@@ -240,7 +236,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              password.url,
+                              _password.url,
                               style: TextStyle(
                                 fontFamily: 'Subtitle',
                                 fontSize: 20,
@@ -254,7 +250,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                     IconButton(
                       icon: Icon(Icons.copy),
                       onPressed: () async {
-                        Clipboard.setData(new ClipboardData(text: password.url));
+                        Clipboard.setData(new ClipboardData(text: _password.url));
                         scaffoldKey.currentState.showSnackBar(
                           SnackBar(
                             content: Text("Copied Url to Clipboard!"),
@@ -284,7 +280,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              password.note,
+                              _password.note,
                               style: TextStyle(
                                 fontFamily: 'Subtitle',
                                 fontSize: 20
@@ -299,7 +295,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                       icon: Icon(Icons.copy),
                       onPressed: () async {
                         Clipboard.setData(
-                            new ClipboardData(text: password.note));
+                            new ClipboardData(text: _password.note));
                         scaffoldKey.currentState.showSnackBar(
                           SnackBar(
                             content: Text("Copied Note to Clipboard!"),
@@ -334,7 +330,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                         "Delete account",
                         style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
                       ),
-                      onPressed: () => null,
+                      onPressed: () => _onAlertButtonDelete(context),
                     ),
                     SizedBox(width: 10),
                   ],
@@ -345,5 +341,44 @@ class _ViewPasswordState extends State<ViewPassword> {
         ],
       ),
     );
+  }
+
+  _onAlertButtonDelete(context) {
+    Alert(
+      context: context,
+      type: AlertType.warning,
+      title: "Are you sure want to delete this account?",
+      desc: "This cannot be undone.",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "Confirm",
+            style: TextStyle(fontFamily: "Title", color: Colors.white, fontSize: 18),
+          ),
+          onPressed: () {
+            _passwordRepo.removePassword(_password);
+            Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                    new PasswordHomepage(passwordRepo: _passwordRepo)
+                )
+            );
+          },
+          color: Color.fromRGBO(0, 179, 134, 1.0),
+        ),
+        DialogButton(
+          child: Text(
+            "Cancel",
+            style: TextStyle(fontFamily: "Title", color: Colors.white, fontSize: 18),
+          ),
+          onPressed: () => Navigator.pop(context),
+          gradient: LinearGradient(colors: [
+            Color.fromRGBO(116, 116, 191, 1.0),
+            Color.fromRGBO(52, 138, 199, 1.0),
+          ]),
+        )
+      ],
+    ).show();
   }
 }
