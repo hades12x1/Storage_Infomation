@@ -16,7 +16,8 @@ class ViewPassword extends StatefulWidget {
   ViewPassword({Key key, this.password, this.passwordRepo}) : super(key: key);
 
   @override
-  _ViewPasswordState createState() => _ViewPasswordState(password, passwordRepo);
+  _ViewPasswordState createState() =>
+      _ViewPasswordState(password, passwordRepo);
 }
 
 class _ViewPasswordState extends State<ViewPassword> {
@@ -76,392 +77,467 @@ class _ViewPasswordState extends State<ViewPassword> {
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
-      key: scaffoldKey,
-      // backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-                height: size.height * sizeIcon,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(30),
-                        bottomRight: Radius.circular(30))),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      icons[index],
-                      SizedBox(height: 12),
-                      Text(_password.appName,
-                          style: TextStyle(
-                              fontFamily: "Title",
-                              fontSize: 32,
-                              color: Colors.white)),
-                    ],
-                  ),
-                )),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      InkWell(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Username",
-                                style: TextStyle(fontFamily: 'Title', fontSize: 20),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 270,
-                              child: Padding(
+        key: scaffoldKey,
+        // backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                  height: size.height * sizeIcon,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30))),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        icons[index],
+                        SizedBox(height: 12),
+                        Text(_password.appName,
+                            style: TextStyle(
+                                fontFamily: "Title",
+                                fontSize: 32,
+                                color: Colors.white)),
+                      ],
+                    ),
+                  )),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        InkWell(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  _password.userName,
+                                  "Username",
                                   style: TextStyle(
-                                    fontFamily: 'Subtitle',
-                                    fontSize: 20,
-                                    // color: Colors.black54
-                                  ),
+                                      fontFamily: 'Title', fontSize: 20),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Clipboard.setData(new ClipboardData(text: _password.userName));
-                          scaffoldKey.currentState.showSnackBar(
-                            SnackBar(
-                              content: Text("Copied Username to Clipboard!"),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.edit_outlined),
-                        onPressed: () {
-                          _updateFieldDialog(context, "Username", _password.userName).then((value) => {
-                          setState(() {_password.userName = value;})
-                          });
-                        },
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      InkWell(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Password",
-                                style: TextStyle(fontFamily: 'Title', fontSize: 20),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 270,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  decrypt ? _password.password : decrypted,
-                                  style: TextStyle(
-                                    fontFamily: 'Subtitle',
-                                    fontSize: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          if (decrypt) {
-                            Clipboard.setData(new ClipboardData(text: decrypted));
-                            scaffoldKey.currentState.showSnackBar(
-                              SnackBar(
-                                content: Text("Copied password Clipboard!"),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          } else {
-                            scaffoldKey.currentState.showSnackBar(
-                              SnackBar(
-                                content: Text("Please unlock account to coppy!"),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          setState(() {
-                            decrypt = !decrypt;
-                          });
-                        },
-                        icon: decrypt ? Icon(Icons.lock_open) : Icon(Icons.lock),
-                      ),
-                      IconButton(
-                        icon: decrypt ? Icon(Icons.edit_outlined) : Icon(Icons.data_usage),
-                        onPressed: () {
-                          if (decrypt) {
-                            _updateFieldPasswordDialog(context, "Password", _password.password).then((value) => {
-                              setState(() {_password.password = value;})
-                            });
-                          } else {
-                            scaffoldKey.currentState.showSnackBar(
-                              SnackBar(
-                                content: Text("Please unlock account to edit!"),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          }
-                        },
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      InkWell(
-                        child:  Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Url",
-                                style: TextStyle(fontFamily: 'Title', fontSize: 20),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 270,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  _password.url,
-                                  style: TextStyle(
-                                    fontFamily: 'Subtitle',
-                                    fontSize: 20,
-                                    // color: Colors.black54
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Clipboard.setData(new ClipboardData(text: _password.url));
-                          scaffoldKey.currentState.showSnackBar(
-                            SnackBar(
-                              content: Text("Copied Url to Clipboard!"),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.edit_outlined),
-                        onPressed: () {
-                          _updateFieldDialog(context, "Url", _password.url).then((value) => {
-                            setState(() {_password.url = value;})
-                          });
-                        },
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      InkWell(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "Note",
-                                style: TextStyle(fontFamily: 'Title', fontSize: 20),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 270,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  _password.note,
-                                  style: TextStyle(
+                              SizedBox(
+                                width: 270,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    _password.userName,
+                                    style: TextStyle(
                                       fontFamily: 'Subtitle',
-                                      fontSize: 20
+                                      fontSize: 20,
+                                      // color: Colors.black54
+                                    ),
                                   ),
                                 ),
                               ),
-                            )
-                          ],
+                            ],
+                          ),
+                          onTap: () {
+                            Clipboard.setData(
+                                new ClipboardData(text: _password.userName));
+                            scaffoldKey.currentState.showSnackBar(
+                              SnackBar(
+                                content: Text("Copied Username to Clipboard!"),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
                         ),
-                        onTap: () {
-                          Clipboard.setData(new ClipboardData(text: _password.note));
-                          scaffoldKey.currentState.showSnackBar(
-                            SnackBar(
-                              content: Text("Copied Note to Clipboard!"),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.edit_outlined),
-                        onPressed: () {
-                          _updateFieldDialog(context, "Note", _password.note).then((value) => {
-                            setState(() {_password.note = value;})
-                          });
-                        },
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 50),
-                  Row(
-                    children: <Widget>[
-                      SizedBox(width: 10),
-                      MaterialButton(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                        height: 50,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                        color: Colors.greenAccent,
-                        child: Text(
-                          "Update account",
-                          style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
+                        IconButton(
+                          icon: Icon(Icons.edit_outlined),
+                          onPressed: () {
+                            _updateFieldDialog(
+                                    context, "Username", _password.userName)
+                                .then((value) => {
+                                      setState(() {
+                                        _password.userName = value;
+                                      })
+                                    });
+                          },
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        InkWell(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "Password",
+                                  style: TextStyle(
+                                      fontFamily: 'Title', fontSize: 20),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 270,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    decrypt ? _password.password : decrypted,
+                                    style: TextStyle(
+                                      fontFamily: 'Subtitle',
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            if (decrypt) {
+                              Clipboard.setData(
+                                  new ClipboardData(text: decrypted));
+                              scaffoldKey.currentState.showSnackBar(
+                                SnackBar(
+                                  content: Text("Copied password Clipboard!"),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            } else {
+                              scaffoldKey.currentState.showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text("Please unlock account to coppy!"),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            }
+                          },
                         ),
-                        onPressed: () => _onAlertButtonUpdate(context),
-                      ),
-                      SizedBox(width: 15),
-                      MaterialButton(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                        height: 50,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                        color: Color(0xff5153FF),
-                        child: Text(
-                          "Delete account",
-                          style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
+                        IconButton(
+                          onPressed: () async {
+                            setState(() {
+                              decrypt = !decrypt;
+                            });
+                          },
+                          icon: decrypt
+                              ? Icon(Icons.lock_open)
+                              : Icon(Icons.lock),
                         ),
-                        onPressed: () => _onAlertButtonDelete(context),
-                      ),
-                      SizedBox(width: 10),
-                    ],
-                  )
-                ],
+                        IconButton(
+                          icon: decrypt
+                              ? Icon(Icons.edit_outlined)
+                              : Icon(Icons.data_usage),
+                          onPressed: () {
+                            if (decrypt) {
+                              _updateFieldPasswordDialog(
+                                      context, "Password", _password.password)
+                                  .then((value) => {
+                                        setState(() {
+                                          _password.password = value;
+                                        })
+                                      });
+                            } else {
+                              scaffoldKey.currentState.showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text("Please unlock account to edit!"),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            }
+                          },
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        InkWell(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "Url",
+                                  style: TextStyle(
+                                      fontFamily: 'Title', fontSize: 20),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 270,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    _password.url,
+                                    style: TextStyle(
+                                      fontFamily: 'Subtitle',
+                                      fontSize: 20,
+                                      // color: Colors.black54
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            Clipboard.setData(
+                                new ClipboardData(text: _password.url));
+                            scaffoldKey.currentState.showSnackBar(
+                              SnackBar(
+                                content: Text("Copied Url to Clipboard!"),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.edit_outlined),
+                          onPressed: () {
+                            _updateFieldDialog(context, "Url", _password.url)
+                                .then((value) => {
+                                      setState(() {
+                                        _password.url = value;
+                                      })
+                                    });
+                          },
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        InkWell(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "Note",
+                                  style: TextStyle(
+                                      fontFamily: 'Title', fontSize: 20),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 270,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    _password.note,
+                                    style: TextStyle(
+                                        fontFamily: 'Subtitle', fontSize: 20),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          onTap: () {
+                            Clipboard.setData(
+                                new ClipboardData(text: _password.note));
+                            scaffoldKey.currentState.showSnackBar(
+                              SnackBar(
+                                content: Text("Copied Note to Clipboard!"),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.edit_outlined),
+                          onPressed: () {
+                            _updateFieldDialog(context, "Note", _password.note)
+                                .then((value) => {
+                                      setState(() {
+                                        _password.note = value;
+                                      })
+                                    });
+                          },
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 50),
+                    Row(
+                      children: <Widget>[
+                        SizedBox(width: 10),
+                        MaterialButton(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                          height: 50,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          color: Colors.greenAccent,
+                          child: Text(
+                            "Update account",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Title",
+                                fontSize: 20),
+                          ),
+                          onPressed: () => _onAlertButtonUpdate(context),
+                        ),
+                        SizedBox(width: 15),
+                        MaterialButton(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                          height: 50,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          color: Color(0xff5153FF),
+                          child: Text(
+                            "Delete account",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Title",
+                                fontSize: 20),
+                          ),
+                          onPressed: () => _onAlertButtonDelete(context),
+                        ),
+                        SizedBox(width: 10),
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      )
-    );
+            ],
+          ),
+        ));
   }
 
-  Future<String> _updateFieldDialog(BuildContext context, String fieldName, String value) {
+  Future<String> _updateFieldDialog(
+      BuildContext context, String fieldName, String value) {
     TextEditingController controller = TextEditingController();
     return showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => WillPopScope(
-        child: AlertDialog(
-          title: Text('Edit value $fieldName'),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(hintText: value),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              color: Colors.green,
-              textColor: Colors.white,
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(controller.text.toString());
-              },
+            child: AlertDialog(
+              title: Text('Edit value $fieldName'),
+              content: TextField(
+                controller: controller,
+                decoration: InputDecoration(hintText: value),
+              ),
+              actions: <Widget>[
+                MaterialButton(
+                    padding: const EdgeInsets.fromLTRB(28, 0, 28, 0),
+                    height: 45,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    color: Colors.green,
+                    child: Text(
+                      "OK",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Title",
+                          fontSize: 18),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop(controller.text.toString());
+                    }),
+                MaterialButton(
+                    padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                    height: 45,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    color: Color(0xff5153FF),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Title",
+                          fontSize: 18),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        Navigator.of(context).pop(value);
+                      });
+                    })
+              ],
             ),
-            FlatButton(
-              color: Colors.red,
-              textColor: Colors.white,
-              child: Text('CANCEL'),
-              onPressed: () {
-                setState(() {
-                  Navigator.of(context).pop(value);
-                });
-              },
-            )
-          ],
-        ),
-        onWillPop: () async => false));
+            onWillPop: () async => false));
   }
 
-  Future<String> _updateFieldPasswordDialog(BuildContext context, String fieldName, String value) {
+  Future<String> _updateFieldPasswordDialog(
+      BuildContext context, String fieldName, String value) {
     TextEditingController controller = TextEditingController();
     String tempPage = value;
     return showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => WillPopScope(
-        child: AlertDialog(
-          title: Text('Edit value $fieldName'),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(hintText: tempPage),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              color: Colors.green,
-              textColor: Colors.white,
-              child: Text('Generate'),
-              onPressed: () {
-                setState(() {
-                  controller.text = generatePassword(true, true, true, true, 15);
-                  tempPage = controller.text.toString();
-                });
-              },
+            child: AlertDialog(
+              title: Text('Edit value $fieldName'),
+              content: TextField(
+                controller: controller,
+                decoration: InputDecoration(hintText: tempPage),
+              ),
+              actions: <Widget>[
+                MaterialButton(
+                    padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
+                    height: 45,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    color: Colors.orange,
+                    child: Text(
+                      "Generate",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Title",
+                          fontSize: 18),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        controller.text = generatePassword(true, true, true, true, 15);
+                        tempPage = controller.text.toString();
+                      });
+                    }),
+                MaterialButton(
+                    padding: const EdgeInsets.fromLTRB(28, 0, 28, 0),
+                    height: 45,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    color: Colors.green,
+                    child: Text(
+                      "OK",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Title",
+                          fontSize: 18),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop(controller.text.toString());
+                    }),
+                MaterialButton(
+                    padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                    height: 45,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    color: Color(0xff5153FF),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: "Title",
+                          fontSize: 18),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        Navigator.of(context).pop(value);
+                      });
+                    })
+              ],
             ),
-            FlatButton(
-              color: Colors.green,
-              textColor: Colors.white,
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop(controller.text.toString());
-              },
-            ),
-            FlatButton(
-              color: Colors.red,
-              textColor: Colors.white,
-              child: Text('CANCEL'),
-              onPressed: () {
-                setState(() {
-                  Navigator.of(context).pop(value);
-                });
-              },
-            )
-          ],
-        ),
-        onWillPop: () async => false));
+            onWillPop: () async => false));
   }
 
   _onAlertButtonUpdate(context) {
@@ -474,7 +550,8 @@ class _ViewPasswordState extends State<ViewPassword> {
         DialogButton(
           child: Text(
             "Confirm",
-            style: TextStyle(fontFamily: "Title", color: Colors.white, fontSize: 18),
+            style: TextStyle(
+                fontFamily: "Title", color: Colors.white, fontSize: 18),
           ),
           onPressed: () {
             _passwordRepo.updatePassword(_password);
@@ -482,16 +559,15 @@ class _ViewPasswordState extends State<ViewPassword> {
                 context,
                 new MaterialPageRoute(
                     builder: (BuildContext context) =>
-                    new PasswordHomepage(passwordRepo: _passwordRepo)
-                )
-            );
+                        new PasswordHomepage(passwordRepo: _passwordRepo)));
           },
           color: Color.fromRGBO(0, 179, 134, 1.0),
         ),
         DialogButton(
           child: Text(
             "Cancel",
-            style: TextStyle(fontFamily: "Title", color: Colors.white, fontSize: 18),
+            style: TextStyle(
+                fontFamily: "Title", color: Colors.white, fontSize: 18),
           ),
           onPressed: () => Navigator.pop(context),
           gradient: LinearGradient(colors: [
@@ -513,7 +589,8 @@ class _ViewPasswordState extends State<ViewPassword> {
         DialogButton(
           child: Text(
             "Confirm",
-            style: TextStyle(fontFamily: "Title", color: Colors.white, fontSize: 18),
+            style: TextStyle(
+                fontFamily: "Title", color: Colors.white, fontSize: 18),
           ),
           onPressed: () {
             _passwordRepo.removePassword(_password);
@@ -521,16 +598,15 @@ class _ViewPasswordState extends State<ViewPassword> {
                 context,
                 new MaterialPageRoute(
                     builder: (BuildContext context) =>
-                    new PasswordHomepage(passwordRepo: _passwordRepo)
-                )
-            );
+                        new PasswordHomepage(passwordRepo: _passwordRepo)));
           },
           color: Color.fromRGBO(0, 179, 134, 1.0),
         ),
         DialogButton(
           child: Text(
             "Cancel",
-            style: TextStyle(fontFamily: "Title", color: Colors.white, fontSize: 18),
+            style: TextStyle(
+                fontFamily: "Title", color: Colors.white, fontSize: 18),
           ),
           onPressed: () => Navigator.pop(context),
           gradient: LinearGradient(colors: [
