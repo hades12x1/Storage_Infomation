@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:storage_infomation/random_string.dart';
 import 'package:storage_infomation/repository/KeyRepository.dart';
 import 'package:storage_infomation/repository/PasswordRepository.dart';
 
@@ -19,7 +20,7 @@ class ViewPassword extends StatefulWidget {
 }
 
 class _ViewPasswordState extends State<ViewPassword> {
-  final Password _password;
+  Password _password;
   final PasswordRepository _passwordRepo;
   var sizeIcon = 0.28;
 
@@ -155,8 +156,10 @@ class _ViewPasswordState extends State<ViewPassword> {
                       ),
                       IconButton(
                         icon: Icon(Icons.edit_outlined),
-                        onPressed: () async {
-                          print("edit username");
+                        onPressed: () {
+                          _updateFieldDialog(context, "Username", _password.userName).then((value) => {
+                          setState(() {_password.userName = value;})
+                          });
                         },
                       )
                     ],
@@ -222,7 +225,9 @@ class _ViewPasswordState extends State<ViewPassword> {
                         icon: decrypt ? Icon(Icons.edit_outlined) : Icon(Icons.data_usage),
                         onPressed: () {
                           if (decrypt) {
-                            print("Edit password");
+                            _updateFieldPasswordDialog(context, "Password", _password.password).then((value) => {
+                              setState(() {_password.password = value;})
+                            });
                           } else {
                             scaffoldKey.currentState.showSnackBar(
                               SnackBar(
@@ -279,7 +284,9 @@ class _ViewPasswordState extends State<ViewPassword> {
                       IconButton(
                         icon: Icon(Icons.edit_outlined),
                         onPressed: () {
-                          print("tapped on container");
+                          _updateFieldDialog(context, "Url", _password.url).then((value) => {
+                            setState(() {_password.url = value;})
+                          });
                         },
                       )
                     ],
@@ -327,7 +334,9 @@ class _ViewPasswordState extends State<ViewPassword> {
                       IconButton(
                         icon: Icon(Icons.edit_outlined),
                         onPressed: () {
-                          print("tapped on container");
+                          _updateFieldDialog(context, "Note", _password.note).then((value) => {
+                            setState(() {_password.note = value;})
+                          });
                         },
                       )
                     ],
@@ -345,7 +354,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                           "Update account",
                           style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
                         ),
-                        onPressed: () => _displayTextInputDialog(context, "test"),
+                        onPressed: () => _updateFieldDialog(context, "test", "..."),
                       ),
                       SizedBox(width: 15),
                       MaterialButton(
@@ -371,47 +380,88 @@ class _ViewPasswordState extends State<ViewPassword> {
     );
   }
 
-  // Todo thêm icon sửa field vào các trường, ấn update thì bản ghi đó đc insert vào db.
-  Future<void> _displayTextInputDialog(BuildContext context, String fieldName) {
+  Future<String> _updateFieldDialog(BuildContext context, String fieldName, String value) {
+    TextEditingController controller = TextEditingController();
     return showDialog(
         context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Edit value $fieldName'),
-            content: TextField(
-              onChanged: (value) {
+        barrierDismissible: false,
+        builder: (context) => WillPopScope(
+        child: AlertDialog(
+          title: Text('Edit value $fieldName'),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(hintText: value),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              color: Colors.green,
+              textColor: Colors.white,
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(controller.text.toString());
+              },
+            ),
+            FlatButton(
+              color: Colors.red,
+              textColor: Colors.white,
+              child: Text('CANCEL'),
+              onPressed: () {
                 setState(() {
-                  // valueText = value;
+                  Navigator.of(context).pop(value);
                 });
               },
-              controller: null,  // _textFieldController
-              decoration: InputDecoration(hintText: "Text Field in Dialog"),
+            )
+          ],
+        ),
+        onWillPop: () async => false));
+  }
+
+  Future<String> _updateFieldPasswordDialog(BuildContext context, String fieldName, String value) {
+    TextEditingController controller = TextEditingController();
+    String tempPage = value;
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => WillPopScope(
+        child: AlertDialog(
+          title: Text('Edit value $fieldName'),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(hintText: tempPage),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              color: Colors.green,
+              textColor: Colors.white,
+              child: Text('Generate'),
+              onPressed: () {
+                setState(() {
+                  controller.text = generatePassword(true, true, true, true, 15);
+                  tempPage = controller.text.toString();
+                });
+              },
             ),
-            actions: <Widget>[
-              FlatButton(
-                color: Colors.green,
-                textColor: Colors.white,
-                child: Text('OK'),
-                onPressed: () {
-                  setState(() {
-                    // codeDialog = valueText;
-                    Navigator.pop(context);
-                  });
-                },
-              ),
-              FlatButton(
-                color: Colors.red,
-                textColor: Colors.white,
-                child: Text('CANCEL'),
-                onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              )
-            ],
-          );
-        });
+            FlatButton(
+              color: Colors.green,
+              textColor: Colors.white,
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(controller.text.toString());
+              },
+            ),
+            FlatButton(
+              color: Colors.red,
+              textColor: Colors.white,
+              child: Text('CANCEL'),
+              onPressed: () {
+                setState(() {
+                  Navigator.of(context).pop(value);
+                });
+              },
+            )
+          ],
+        ),
+        onWillPop: () async => false));
   }
 
   _onAlertButtonDelete(context) {

@@ -5,13 +5,13 @@ import 'package:storage_infomation/database/db.dart' as db;
 
 class Password {
   final int id;
-  final String appName;
-  final String icon;
-  final String color;
-  final String url;
-  final String note;
-  final String userName;
-  final String password;
+  String appName;
+  String icon;
+  String color;
+  String url;
+  String note;
+  String userName;
+  String password;
 
   Password({
     this.id, this.appName, this.icon, this.color,
