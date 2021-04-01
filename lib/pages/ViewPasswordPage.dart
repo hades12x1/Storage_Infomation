@@ -116,36 +116,35 @@ class _ViewPasswordState extends State<ViewPassword> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Username",
-                            style: TextStyle(fontFamily: 'Title', fontSize: 20),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 270,
-                          child: Padding(
+                    InkWell(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              _password.userName,
-                              style: TextStyle(
-                                fontFamily: 'Subtitle',
-                                fontSize: 20,
-                                // color: Colors.black54
+                              "Username",
+                              style: TextStyle(fontFamily: 'Title', fontSize: 20),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 270,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                _password.userName,
+                                style: TextStyle(
+                                  fontFamily: 'Subtitle',
+                                  fontSize: 20,
+                                  // color: Colors.black54
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.copy),
-                      onPressed: () async {
+                        ],
+                      ),
+                      onTap: () {
                         Clipboard.setData(new ClipboardData(text: _password.userName));
                         scaffoldKey.currentState.showSnackBar(
                           SnackBar(
@@ -154,49 +153,46 @@ class _ViewPasswordState extends State<ViewPassword> {
                           ),
                         );
                       },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit_outlined),
+                      onPressed: () async {
+                        print("edit username");
+                      },
                     )
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Password",
-                            style: TextStyle(fontFamily: 'Title', fontSize: 20),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 270,
-                          child: Padding(
+                    InkWell(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              decrypt ? _password.password : decrypted,
-                              style: TextStyle(
-                                fontFamily: 'Subtitle',
-                                fontSize: 20,
+                              "Password",
+                              style: TextStyle(fontFamily: 'Title', fontSize: 20),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 270,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                decrypt ? _password.password : decrypted,
+                                style: TextStyle(
+                                  fontFamily: 'Subtitle',
+                                  fontSize: 20,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        setState(() {
-                          decrypt = !decrypt;
-                        });
-                      },
-                      icon: decrypt ? Icon(Icons.lock_open) : Icon(Icons.lock),
-                    ),
-                    IconButton(
-                      icon: decrypt ? Icon(Icons.copy) : Icon(Icons.data_usage),
-                      onPressed: () async {
+                        ],
+                      ),
+                      onTap: () {
                         if (decrypt) {
                           Clipboard.setData(new ClipboardData(text: decrypted));
                           scaffoldKey.currentState.showSnackBar(
@@ -214,42 +210,64 @@ class _ViewPasswordState extends State<ViewPassword> {
                           );
                         }
                       },
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        setState(() {
+                          decrypt = !decrypt;
+                        });
+                      },
+                      icon: decrypt ? Icon(Icons.lock_open) : Icon(Icons.lock),
+                    ),
+                    IconButton(
+                      icon: decrypt ? Icon(Icons.edit_outlined) : Icon(Icons.data_usage),
+                      onPressed: () {
+                        if (decrypt) {
+                          print("Edit password");
+                        } else {
+                          scaffoldKey.currentState.showSnackBar(
+                            SnackBar(
+                              content: Text("Please unlock account to edit!"),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                        }
+                      },
                     )
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Url",
-                            style: TextStyle(fontFamily: 'Title', fontSize: 20),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 270,
-                          child: Padding(
+                    InkWell(
+                      child:  Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              _password.url,
-                              style: TextStyle(
-                                fontFamily: 'Subtitle',
-                                fontSize: 20,
-                                // color: Colors.black54
+                              "Url",
+                              style: TextStyle(fontFamily: 'Title', fontSize: 20),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 270,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                _password.url,
+                                style: TextStyle(
+                                  fontFamily: 'Subtitle',
+                                  fontSize: 20,
+                                  // color: Colors.black54
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.copy),
-                      onPressed: () async {
+                        ],
+                      ),
+                      onTap: () {
                         Clipboard.setData(new ClipboardData(text: _password.url));
                         scaffoldKey.currentState.showSnackBar(
                           SnackBar(
@@ -258,44 +276,47 @@ class _ViewPasswordState extends State<ViewPassword> {
                           ),
                         );
                       },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit_outlined),
+                      onPressed: () {
+                        print("tapped on container");
+                      },
                     )
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Note",
-                            style: TextStyle(fontFamily: 'Title', fontSize: 20),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 270,
-                          child: Padding(
+                    InkWell(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              _password.note,
-                              style: TextStyle(
-                                fontFamily: 'Subtitle',
-                                fontSize: 20
-                              ),
+                              "Note",
+                              style: TextStyle(fontFamily: 'Title', fontSize: 20),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 35),
-                      ],
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.copy),
-                      onPressed: () async {
-                        Clipboard.setData(
-                            new ClipboardData(text: _password.note));
+                          SizedBox(
+                            width: 270,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                _password.note,
+                                style: TextStyle(
+                                    fontFamily: 'Subtitle',
+                                    fontSize: 20
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      onTap: () {
+                        Clipboard.setData(new ClipboardData(text: _password.note));
                         scaffoldKey.currentState.showSnackBar(
                           SnackBar(
                             content: Text("Copied Note to Clipboard!"),
@@ -303,9 +324,16 @@ class _ViewPasswordState extends State<ViewPassword> {
                           ),
                         );
                       },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.edit_outlined),
+                      onPressed: () {
+                        print("tapped on container");
+                      },
                     )
                   ],
                 ),
+                SizedBox(height: 50),
                 Row(
                   children: <Widget>[
                     SizedBox(width: 10),
@@ -318,7 +346,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                         "Update account",
                         style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
                       ),
-                      onPressed: () => null,
+                      onPressed: () => _displayTextInputDialog(context),
                     ),
                     SizedBox(width: 15),
                     MaterialButton(
@@ -341,6 +369,49 @@ class _ViewPasswordState extends State<ViewPassword> {
         ],
       ),
     );
+  }
+
+  // Todo thêm icon sửa field vào các trường, ấn update thì bản ghi đó đc insert vào db.
+  Future<void> _displayTextInputDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('TextField in Dialog'),
+            content: TextField(
+              onChanged: (value) {
+                setState(() {
+                  // valueText = value;
+                });
+              },
+              controller: null,  // _textFieldController
+              decoration: InputDecoration(hintText: "Text Field in Dialog"),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                color: Colors.green,
+                textColor: Colors.white,
+                child: Text('OK'),
+                onPressed: () {
+                  setState(() {
+                    // codeDialog = valueText;
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+              FlatButton(
+                color: Colors.red,
+                textColor: Colors.white,
+                child: Text('CANCEL'),
+                onPressed: () {
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+              )
+            ],
+          );
+        });
   }
 
   _onAlertButtonDelete(context) {
