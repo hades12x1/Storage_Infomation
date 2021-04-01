@@ -354,7 +354,7 @@ class _ViewPasswordState extends State<ViewPassword> {
                           "Update account",
                           style: TextStyle(color: Colors.white, fontFamily: "Title", fontSize: 20),
                         ),
-                        onPressed: () => _updateFieldDialog(context, "test", "..."),
+                        onPressed: () => _onAlertButtonUpdate(context),
                       ),
                       SizedBox(width: 15),
                       MaterialButton(
@@ -464,11 +464,50 @@ class _ViewPasswordState extends State<ViewPassword> {
         onWillPop: () async => false));
   }
 
+  _onAlertButtonUpdate(context) {
+    Alert(
+      context: context,
+      type: AlertType.success,
+      title: "Update this account?",
+      desc: "This cannot be undone.",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "Confirm",
+            style: TextStyle(fontFamily: "Title", color: Colors.white, fontSize: 18),
+          ),
+          onPressed: () {
+            _passwordRepo.updatePassword(_password);
+            Navigator.push(
+                context,
+                new MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                    new PasswordHomepage(passwordRepo: _passwordRepo)
+                )
+            );
+          },
+          color: Color.fromRGBO(0, 179, 134, 1.0),
+        ),
+        DialogButton(
+          child: Text(
+            "Cancel",
+            style: TextStyle(fontFamily: "Title", color: Colors.white, fontSize: 18),
+          ),
+          onPressed: () => Navigator.pop(context),
+          gradient: LinearGradient(colors: [
+            Color.fromRGBO(116, 116, 191, 1.0),
+            Color.fromRGBO(52, 138, 199, 1.0),
+          ]),
+        )
+      ],
+    ).show();
+  }
+
   _onAlertButtonDelete(context) {
     Alert(
       context: context,
       type: AlertType.warning,
-      title: "Are you sure want to delete this account?",
+      title: "Delete this account?",
       desc: "This cannot be undone.",
       buttons: [
         DialogButton(
